@@ -1,0 +1,73 @@
+# ── Dependências ─────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ── Build / saída compilada ──────────────────────────
+dist/
+build/
+*.tsbuildinfo
+
+# ── Variáveis de ambiente e segredos ─────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ── Testes e cobertura ───────────────────────────────
+coverage/
+.nyc_output/
+
+# ── Source maps ──────────────────────────────────────
+*.js.map
+
+# ── Logs ─────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ── Cache de ferramentas ─────────────────────────────
+.cache/
+.eslintcache
+.parcel-cache/
+.turbo/
+.npm/
+
+# ── Dados locais (MongoDB / Redis / Supabase) ────────
+# Volumes e dumps criados por containers ou CLI local
+data/
+dump.rdb
+*.rdb
+supabase/.branches/
+supabase/.temp/
+
+# ── Arquivos temporários ─────────────────────────────
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+
+# ── Sistema operacional ──────────────────────────────
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# ── IDEs / editores ──────────────────────────────────
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ── Git / CI locais ──────────────────────────────────
+*.orig
+*.rej
