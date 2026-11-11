@@ -9,7 +9,6 @@ export interface ProductFilters {
   isActive?: boolean;
 }
 
-// ── Leitura ───────────────────────────────────────────────────────────────────
 
 export async function findAllProducts(
   filters: ProductFilters = {},
@@ -42,7 +41,6 @@ export async function findProductById(id: string): Promise<IProduct | null> {
   return Product.findById(id).lean() as Promise<IProduct | null>;
 }
 
-// ── Escrita ───────────────────────────────────────────────────────────────────
 
 export async function createProduct(
   data: Omit<IProduct, '_id' | 'createdAt' | 'updatedAt'>,

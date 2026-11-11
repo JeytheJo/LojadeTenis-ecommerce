@@ -8,7 +8,6 @@ const credentialsSchema = z.object({
   password: z.string().min(6),
 });
 
-/** POST /api/auth/login */
 export async function login(req: Request, res: Response): Promise<void> {
   const parsed = credentialsSchema.safeParse(req.body);
   if (!parsed.success) {
@@ -34,14 +33,14 @@ export async function login(req: Request, res: Response): Promise<void> {
   });
 }
 
-/** POST /api/auth/logout */
+
 export async function logout(req: Request, res: Response): Promise<void> {
   const token = req.headers.authorization?.split(' ')[1];
   if (token) await supabase.auth.admin.signOut(token);
   ok(res, null, 'Logout realizado com sucesso');
 }
 
-/** GET /api/auth/me  (protegida por requireAuth) */
+
 export async function me(req: Request, res: Response): Promise<void> {
   ok(res, {
     id:    req.user?.id,

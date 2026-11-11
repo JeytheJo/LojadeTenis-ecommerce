@@ -32,16 +32,16 @@ async function bootstrap(): Promise<void> {
   // Supabase: falha gera aviso mas não impede o servidor de subir
   try {
     await pingSupabase();
-    console.log('✅  Supabase conectado');
+    console.log('Supabase conectado');
   } catch (err) {
-    console.warn('⚠️   Supabase indisponível:', err instanceof Error ? err.message : err);
+    console.warn('Supabase indisponível:', err instanceof Error ? err.message : err);
     console.warn('    Autenticação de admin não funcionará até a conexão ser restaurada.');
   }
 
   app.listen(env.PORT, () => {
-    console.log(`\n🚀  Servidor: http://localhost:${env.PORT}`);
-    console.log(`🩺  Health:   http://localhost:${env.PORT}/api/health`);
-    console.log(`📌  Ambiente: ${env.NODE_ENV}\n`);
+    console.log(`\n  Servidor: http://localhost:${env.PORT}`);
+    console.log(`  Health:   http://localhost:${env.PORT}/api/health`);
+    console.log(`  Ambiente: ${env.NODE_ENV}\n`);
   });
 }
 

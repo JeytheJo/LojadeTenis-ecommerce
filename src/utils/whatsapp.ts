@@ -6,7 +6,7 @@ import { WhatsAppOrderPayload } from '../types';
  * Exemplo de uso no front-end: window.open(url, '_blank')
  */
 export function buildWhatsAppUrl(payload: WhatsAppOrderPayload): string {
-  const lines: string[] = ['🛒 *Novo Pedido — Kicks&Co*\n'];
+  const lines: string[] = ['*Novo Pedido — Kicks&Co*\n'];
 
   if (payload.customerName) {
     lines.push(`👤 Cliente: ${payload.customerName}`);
@@ -21,7 +21,7 @@ export function buildWhatsAppUrl(payload: WhatsAppOrderPayload): string {
     );
   });
 
-  lines.push(`\n💰 *Total: R$ ${payload.total.toFixed(2).replace('.', ',')}*`);
+  lines.push(`\n*Total: R$ ${payload.total.toFixed(2).replace('.', ',')}*`);
 
   const message = encodeURIComponent(lines.join('\n'));
   return `https://wa.me/${env.WHATSAPP_PHONE}?text=${message}`;
