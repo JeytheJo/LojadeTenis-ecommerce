@@ -1,67 +1,113 @@
 import { Request, Response } from 'express';
-import { z } from 'zod';
-import * as repo from '../repositories/product.repository';
-import { ok, created, noContent, badRequest, notFound } from '../utils/response';
-
-const productSchema = z.object({
-  name:        z.string().min(2).max(100),
-  description: z.string().default(''),
-  price:       z.number().positive(),
-  images:      z.array(z.string().url()).default([]),
-  category:    z.string().min(1),
-  brand:       z.string().min(1),
-  sizes:       z.array(z.string()).default([]),
-  stock:       z.number().int().min(0).default(0),
-  isActive:    z.boolean().default(true),
-});
-
-const updateSchema = productSchema.partial();
+import { isValidObjectId } from 'mongoose';
+import { Product } from '../models/nosql/Products';
+import { addToHistory } from '../config/redis';
+import { ok, created, badRequest, notFound } from '../utils/response';
 
 export async function listProducts(req: Request, res: Response): Promise<void> {
-  const page  = Number(req.query.page)  || 1;
-  const limit = Number(req.query.limit) || 20;
+  const page     = Math.max(1, Number(req.query.page)  || 1);
+  const limit    = Math.min(50, Number(req.query.limit) || 20);
+  const skip     = (page - 1) * limit;
 
-  const filters = {
-    category: req.query.category as string | undefined,
-    brand:    req.query.brand    as string | undefined,
-    search:   req.query.search   as string | undefined,
-    isActive: true,
-  };
+  const filter: Record<string, unknown> = { ativo: true };
 
-  const result = await repo.findAllProducts(filters, { page, limit });
-  ok(res, result);
+  if (req.query.categoria) filter.categoria = req.query.categoria;
+  if (req.query.marca)     filter.marca     = req.query.marca;
+  if (req.query.search) {
+    filter.$text = { $search: req.query.search as string };
+  }
+
+  const [products, total] = await Promise.all([
+    Product.find(filter).skip(skip).limit(limit).lean(),
+    Product.countDocuments(filter),
+  ]);
+
+  ok(res, {
+    products,
+    pagination: { page, limit, total, pages: Math.ceil(total / limit) },
+  });
 }
 
 export async function getProduct(req: Request, res: Response): Promise<void> {
-  const product = await repo.findProductById(req.params.id);
-  if (!product) { notFound(res, 'Produto não encontrado'); return; }
+  const { id } = req.params;
+
+  if (!isValidObjectId(id)) {
+    badRequest(res, 'ID inválido');
+    return;
+  }
+
+  const product = await Product.findById(id).lean();
+  if (!product) {
+    notFound(res, 'Produto não encontrado');
+    return;
+  }
+
+  // registra no histórico do Redis
+  const sessionId = (req.headers['x-session-id'] as string) ?? req.ip ?? 'anonymous';
+  await addToHistory(sessionId, id).catch(() => {}); // falha silenciosa
+
   ok(res, product);
 }
 
-
 export async function createProduct(req: Request, res: Response): Promise<void> {
-  const parsed = productSchema.safeParse(req.body);
-  if (!parsed.success) {
-    badRequest(res, 'Dados inválidos', parsed.error.errors.map((e) => e.message));
+  const { nome, marca, categoria, cor, tamanho, preco, estoque, imageUrl } = req.body;
+
+  if (!nome || !marca || !categoria || !cor || tamanho == null || preco == null) {
+    badRequest(res, 'Campos obrigatórios: nome, marca, categoria, cor, tamanho, preco');
     return;
   }
-  const product = await repo.createProduct(parsed.data as Parameters<typeof repo.createProduct>[0]);
-  created(res, product, 'Produto criado com sucesso');
+
+  const product = await Product.create({
+    nome, marca, categoria, cor, tamanho, preco,
+    estoque: estoque ?? 0,
+    imageUrl,
+    ativo: true,
+  });
+
+  created(res, product);
 }
 
 export async function updateProduct(req: Request, res: Response): Promise<void> {
-  const parsed = updateSchema.safeParse(req.body);
-  if (!parsed.success) {
-    badRequest(res, 'Dados inválidos', parsed.error.errors.map((e) => e.message));
+  const { id } = req.params;
+
+  if (!isValidObjectId(id)) {
+    badRequest(res, 'ID inválido');
     return;
   }
-  const product = await repo.updateProduct(req.params.id, parsed.data);
-  if (!product) { notFound(res, 'Produto não encontrado'); return; }
-  ok(res, product, 'Produto atualizado');
+
+  const product = await Product.findByIdAndUpdate(
+    id,
+    { $set: req.body },
+    { new: true, runValidators: true },
+  ).lean();
+
+  if (!product) {
+    notFound(res, 'Produto não encontrado');
+    return;
+  }
+
+  ok(res, product);
 }
 
+// Soft delete: apenas desativa o produto
 export async function deleteProduct(req: Request, res: Response): Promise<void> {
-  const product = await repo.deactivateProduct(req.params.id);
-  if (!product) { notFound(res, 'Produto não encontrado'); return; }
-  noContent(res);
+  const { id } = req.params;
+
+  if (!isValidObjectId(id)) {
+    badRequest(res, 'ID inválido');
+    return;
+  }
+
+  const product = await Product.findByIdAndUpdate(
+    id,
+    { $set: { ativo: false } },
+    { new: true },
+  ).lean();
+
+  if (!product) {
+    notFound(res, 'Produto não encontrado');
+    return;
+  }
+
+  ok(res, null, 'Produto removido do catálogo');
 }

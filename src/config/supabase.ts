@@ -1,10 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import { env } from './env';
 
-/** Cliente público — validar tokens, login, registro. */
+/** cliente público — validar tokens, login, registro. */
 export const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
 
-/** Cliente admin — ignora RLS; use apenas em rotas protegidas do servidor. */
+/** cliente admin — ignora RLS; use apenas em rotas protegidas do servidor. */
 export const supabaseAdmin = createClient(
   env.SUPABASE_URL,
   env.SUPABASE_SERVICE_ROLE_KEY,
@@ -21,8 +21,7 @@ export async function pingSupabase(): Promise<void> {
 }
 
 /**
- * Valida um JWT emitido pelo Supabase.
- * Retorna o usuário ou lança erro.
+ * Valida um JWT emitido pelo Supabase retornando o usuário ou lança erro.
  */
 export async function verifyToken(token: string) {
   const { data, error } = await supabase.auth.getUser(token);

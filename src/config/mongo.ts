@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 import { env } from './env';
 
 // ── Eventos de conexão ────────────────────────────────────────────────────────
-mongoose.connection.on('connected',    () => console.log('✅  MongoDB conectado'));
-mongoose.connection.on('disconnected', () => console.warn('⚠️   MongoDB desconectado'));
-mongoose.connection.on('error',        (err) => console.error('❌  MongoDB erro:', err));
+mongoose.connection.on('connected',    () => console.log(':)  MongoDB conectado'));
+mongoose.connection.on('disconnected', () => console.warn(':/   MongoDB desconectado'));
+mongoose.connection.on('error',        (err) => console.error('X  MongoDB erro:', err));
 
 export async function connectMongo(): Promise<void> {
   try {

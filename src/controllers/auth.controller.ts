@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import { supabase } from '../config/supabase';
+import { supabase, supabaseAdmin } from '../config/supabase';
 import { ok, badRequest, unauthorized } from '../utils/response';
 
 const credentialsSchema = z.object({
@@ -36,7 +36,7 @@ export async function login(req: Request, res: Response): Promise<void> {
 
 export async function logout(req: Request, res: Response): Promise<void> {
   const token = req.headers.authorization?.split(' ')[1];
-  if (token) await supabase.auth.admin.signOut(token);
+  if (token) await supabaseAdmin.auth.admin.signOut(token);
   ok(res, null, 'Logout realizado com sucesso');
 }
 

@@ -1,24 +1,35 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../config/supabase';
-import { unauthorized } from '../utils/response';
+import { User } from '@supabase/supabase-js';
+import { supabase, supabaseAdmin } from '../config/supabase';
 
-/**
- * Middleware que valida o JWT emitido pelo Supabase.
- * Em caso de sucesso, popula req.user com o usuário autenticado.
- */
-export async function requireAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
+// Extende o tipo Request para carregar o usuário autenticado
+declare global {
+  namespace Express {
+    interface Request {
+      user?: User;
+    }
+  }
+}
+
+export async function requireAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
   const authHeader = req.headers.authorization;
 
   if (!authHeader?.startsWith('Bearer ')) {
-    unauthorized(res, 'Token não fornecido');
+    res.status(401).json({ error: 'Token não fornecido' });
     return;
   }
 
+  const token = authHeader.slice(7); // remove "Bearer "
+
   try {
-    const token = authHeader.split(' ')[1];
     req.user = await verifyToken(token);
     next();
   } catch {
-    unauthorized(res, 'Token inválido ou expirado');
+    res.status(401).json({ error: 'Token inválido ou expirado' });
   }
 }

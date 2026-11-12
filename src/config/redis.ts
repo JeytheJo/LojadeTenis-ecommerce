@@ -6,8 +6,8 @@ export const redis = new Redis(env.REDIS_URL, {
   maxRetriesPerRequest: 3,
 });
 
-redis.on('connect', () => console.log('✅  Redis conectado'));
-redis.on('error', (err) => console.error('❌  Redis erro:', err));
+redis.on('connect', () => console.log(':)  Redis conectado'));
+redis.on('error', (err) => console.error('X  Redis erro:', err));
 
 export async function connectRedis(): Promise<void> {
   await redis.connect();
