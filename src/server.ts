@@ -11,8 +11,19 @@ import router from './routes';
 
 const app = express();
 
-// ── Middlewares globais ───────────────────────────────────────────────────────
-app.use(cors());
+const allowedOrigins = env.CORS_ORIGINS.split(',').map(o => o.trim());
+
+app.use(cors({
+  origin(origin, callback) {
+    // Sem origin = curl/Postman/health check: permite
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS bloqueado para origem: ${origin}`));
+    }
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
 // ── Rotas ─────────────────────────────────────────────────────────────────────

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { checkServices } from '../services/health.service';
 import productRoutes from './product.routes';
 import authRoutes    from './auth.routes';
+import orderRoutes from './order.routes';
 
 const router = Router();
 
@@ -12,7 +13,7 @@ router.get('/health', async (_req, res) => {
 
 router.use('/auth',     authRoutes);
 router.use('/products', productRoutes);
-
+router.use('/orders', orderRoutes);
 // Futuras rotas:
 // router.use('/cart',    cartRoutes);
 // router.use('/history', historyRoutes);

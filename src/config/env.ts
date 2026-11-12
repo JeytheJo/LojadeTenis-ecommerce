@@ -24,6 +24,9 @@ const envSchema = z.object({
 
   // WhatsApp
   WHATSAPP_PHONE: z.string(),
+  
+  // CORS — múltiplas origens separadas por vírgula
+  CORS_ORIGINS: z.string().default('http://localhost:5173'),
 });
 
 const parsed = envSchema.safeParse(process.env);
