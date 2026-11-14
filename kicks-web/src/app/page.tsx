@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 
@@ -116,7 +117,7 @@ export default function Home() {
           {produtos.map((p) => (
             <article key={p.nome} className="card">
               <div className="foto">
-                <div className={`kimg${p.contain ? " contain" : ""}${p.flip ? " flip" : ""}`} style={img(p.img)} />
+                <Link href={`/produto/${p.img}`} aria-label={`Ver ${p.nome}`} className={`kimg${p.contain ? " contain" : ""}${p.flip ? " flip" : ""}`} style={img(p.img)} />
                 {p.badge && <span className="tag">{p.badge}</span>}
                 <button
                   className={`fav${favoritos.includes(p.nome) ? " on" : ""}`}
@@ -126,7 +127,7 @@ export default function Home() {
                   <Icon n="heart" small />
                 </button>
               </div>
-              <div className="det"><b>{p.nome}</b><small>{p.cat}</small></div>
+              <div className="det"><b><Link href={`/produto/${p.img}`}>{p.nome}</Link></b><small>{p.cat}</small></div>
               <div className="preco">
                 <b>{p.preco}</b>
                 <button className="add" aria-label={`Adicionar ${p.nome} à sacola`}><Icon n="plus" small /></button>

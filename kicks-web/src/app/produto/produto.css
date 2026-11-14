@@ -1,0 +1,45 @@
+/* Página de produto — usa os tokens (--bg, --navy, --soft...) definidos em .kicks no kicks.css */
+.kicks .pd-aviso{background:var(--navy);color:#f4f4f2;font-size:10px;font-weight:500;padding:9px;text-align:center}
+.kicks .pd-nav{display:flex;align-items:center;justify-content:space-between;padding:20px 64px;gap:16px;flex-wrap:wrap}
+.kicks .pd-logo{font-family:var(--serif);font-size:32px;line-height:1.45;padding:10px 0;color:var(--soft)}
+.kicks .pd-links{display:flex;gap:28px}
+.kicks .pd-links a{padding:10px 0;font-size:13px;font-weight:500;color:var(--soft);display:flex;gap:6px;white-space:nowrap}
+.kicks .pd-links a small{font-size:12px;font-weight:600}
+
+.kicks .pd-main{padding:64px;display:flex;flex-direction:column;gap:32px}
+.kicks .pd-voltar{display:flex;gap:12px;align-items:flex-start}
+.kicks .pd-btn-o{background:var(--bg);border:1px solid var(--steel);color:var(--soft);padding:16px;font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;white-space:nowrap;cursor:pointer}
+.kicks .pd-voltar span{font-size:12px;color:var(--soft)}
+
+.kicks .pd-det{display:grid;grid-template-columns:620px 1fr;gap:64px;align-items:start}
+.kicks .pd-foto{height:540px;background:var(--sand) var(--img,none) center/contain no-repeat}
+.kicks .pd-info{display:flex;flex-direction:column;gap:24px;align-items:flex-start;max-width:628px}
+.kicks .pd-eyebrow{font-size:10px;font-weight:600;color:var(--soft);white-space:pre}
+.kicks .pd-info h1{font-family:var(--serif);font-weight:400;font-size:42px;line-height:1.45}
+.kicks .pd-cat{font-size:14px;color:var(--soft)}
+.kicks .pd-preco{font-size:26px;font-weight:600;line-height:1.45}
+.kicks .pd-desc{font-size:14px;color:var(--soft);max-width:580px}
+.kicks .pd-tam{display:flex;flex-direction:column;gap:12px}
+.kicks .pd-tam-sel{display:flex;gap:8px;font-size:13px}
+.kicks .pd-tam-sel b:first-child{font-weight:500}
+.kicks .pd-tam-sel b:last-child{font-weight:600;color:var(--soft)}
+.kicks .pd-nums{display:flex;gap:10px;flex-wrap:wrap}
+.kicks .pd-num{background:var(--bg);border:1px solid var(--steel);color:var(--soft);padding:16px;font-size:13px;font-weight:500;line-height:1.45;cursor:pointer}
+.kicks .pd-num[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#f4f4f2}
+.kicks .pd-add{background:var(--navy);color:#f4f4f2;border:0;width:100%;padding:16px;font-size:13px;font-weight:500;cursor:pointer;white-space:pre}
+.kicks .pd-nota{font-size:11px;color:var(--soft);max-width:580px}
+.kicks .pd-aviso-compra{background:var(--sand);color:var(--soft);padding:16px;width:100%;display:flex;flex-direction:column;gap:8px}
+.kicks .pd-aviso-compra b{font-size:13px;font-weight:600}
+.kicks .pd-aviso-compra span{font-size:12px;max-width:560px}
+
+.kicks .pd-rodape{display:block;gap:0;background:var(--sand);color:var(--soft);padding:24px 64px;font-size:11px;line-height:1.45}
+.kicks .pd-rodape b{display:block;font-weight:500}
+
+@media (max-width:1100px){
+  .kicks .pd-det{grid-template-columns:1fr;gap:32px}.kicks .pd-foto{height:420px}
+}
+@media (max-width:640px){
+  .kicks .pd-nav,.kicks .pd-main,.kicks .pd-rodape{padding-left:20px;padding-right:20px}
+  .kicks .pd-main{padding-top:32px;padding-bottom:32px}.kicks .pd-links{gap:16px;flex-wrap:wrap}
+  .kicks .pd-info h1{font-size:32px}.kicks .pd-foto{height:300px}
+}
