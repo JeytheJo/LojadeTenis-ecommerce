@@ -1,32 +1,46 @@
-import { Link } from 'react-router-dom';
-import { Product } from '../types';
-import { useCart } from '../context/CartContext';
+import { Link } from 'react-router-dom'
+import { Heart, Plus } from 'lucide-react'
+import type { Product } from '../types/product'
+import { formatBRL } from '../lib/whatsapp'
 
-export function ProductCard({ product }: { product: Product }) {
-  const { addItem } = useCart();
-
+export default function ProductCard({ product, onAdd }: { product: Product; onAdd?: (p: Product) => void }) {
   return (
-    <div className="border rounded-lg overflow-hidden flex flex-col">
-      <Link to={`/produto/${product._id}`}>
-        <img
-          src={product.imageUrl || 'https://placehold.co/400x300?text=Sem+imagem'}
-          alt={product.nome}
-          className="w-full h-48 object-cover"
-        />
-      </Link>
-      <div className="p-4 flex flex-col gap-1 flex-1">
-        <span className="text-xs text-neutral-500">{product.marca}</span>
-        <h3 className="font-semibold">{product.nome}</h3>
-        <span className="text-lg font-bold mt-auto">
-          R$ {product.preco.toFixed(2)}
-        </span>
+    <Link to={`/produto/${product._id}`} className="flex flex-col gap-[12px] w-[310px]">
+      <div className="relative w-[310px] h-[320px] bg-sand">
+        {product.imageUrl ? (
+          <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-steel text-[12px]">
+            Sem imagem
+          </div>
+        )}
         <button
-          onClick={() => addItem(product)}
-          className="mt-2 bg-neutral-900 text-white rounded py-2 hover:bg-neutral-700"
+          className="absolute bg-offwhite p-[10px] rounded-full top-[12px] right-[12px]"
+          onClick={(e) => e.preventDefault()}
+          aria-label="Favoritar"
         >
-          Adicionar ao carrinho
+          <Heart className="w-5 h-5 text-ink" />
         </button>
       </div>
-    </div>
-  );
+      <div className="flex flex-col gap-[4px]">
+        <p className="font-medium text-ink text-[16px]">{product.name}</p>
+        <p className="font-sans text-steel text-[12px]">
+          {product.category}{product.brand ? ` · ${product.brand}` : ''}
+        </p>
+      </div>
+      <div className="flex items-center justify-between w-full">
+        <p className="font-semibold text-ink text-[16px]">{formatBRL(product.price)}</p>
+        <button
+          className="bg-steel p-[6px]"
+          onClick={(e) => {
+            e.preventDefault()
+            onAdd?.(product)
+          }}
+          aria-label="Adicionar à sacola"
+        >
+          <Plus className="w-5 h-5 text-offwhite" />
+        </button>
+      </div>
+    </Link>
+  )
 }

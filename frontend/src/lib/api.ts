@@ -1,23 +1,35 @@
-import axios from 'axios';
-import { supabase } from './supabase';
+import type { Product } from '../types/product'
 
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-});
+const API_URL = import.meta.env.VITE_API_URL as string
 
-api.interceptors.request.use(async (config) => {
-  const { data } = await supabase.auth.getSession();
-  if (data.session) {
-    config.headers.Authorization = `Bearer ${data.session.access_token}`;
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const token = localStorage.getItem('kicksco_token')
+  const res = await fetch(`${API_URL}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
+    },
+  })
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error(body.message || `Erro ${res.status} ao chamar ${path}`)
   }
+  // No content
+  if (res.status === 204) return undefined as T
+  return res.json()
+}
 
-  // sessão anônima para o histórico do Redis
-  let sessionId = localStorage.getItem('kicks_session_id');
-  if (!sessionId) {
-    sessionId = crypto.randomUUID();
-    localStorage.setItem('kicks_session_id', sessionId);
-  }
-  config.headers['X-Session-Id'] = sessionId;
+// ----- Produtos (MongoDB) -----
+export const getProducts = () => request<Product[]>('/products')
+export const getProduct = (id: string) => request<Product>(`/products/${id}`)
+export const createProduct = (data: Omit<Product, '_id' | 'createdAt'>) =>
+  request<Product>('/products', { method: 'POST', body: JSON.stringify(data) })
 
-  return config;
-});
+// ----- Histórico "vistos recentemente" (Redis) -----
+export const getRecentlyViewed = () => request<Product[]>('/history')
+export const registerView = (productId: string) =>
+  request<void>(`/history/${productId}`, { method: 'POST' })
+export const clearHistory = () => request<void>('/history', { method: 'DELETE' })
