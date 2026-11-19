@@ -17,19 +17,53 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const body = await res.json().catch(() => ({}))
     throw new Error(body.message || `Erro ${res.status} ao chamar ${path}`)
   }
-  // No content
   if (res.status === 204) return undefined as T
   return res.json()
 }
 
 // ----- Produtos (MongoDB) -----
-export const getProducts = () => request<Product[]>('/products')
-export const getProduct = (id: string) => request<Product>(`/products/${id}`)
-export const createProduct = (data: Omit<Product, '_id' | 'createdAt'>) =>
-  request<Product>('/products', { method: 'POST', body: JSON.stringify(data) })
+// Backend retorna: { success, data: { products: [], pagination: {} } }
+export async function getProducts(): Promise<Product[]> {
+  const res = await request<{ success: boolean; data: { products: Product[] } }>('/products')
+  return res?.data?.products ?? []
+}
+
+export async function getProduct(id: string): Promise<Product> {
+  const res = await request<{ success: boolean; data: Product }>(`/products/${id}`)
+  return res?.data ?? (res as unknown as Product)
+}
+
+export async function createProduct(data: Omit<Product, '_id' | 'createdAt'>): Promise<Product> {
+  const res = await request<{ success: boolean; data: Product }>('/products', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return res?.data ?? (res as unknown as Product)
+}
 
 // ----- Histórico "vistos recentemente" (Redis) -----
-export const getRecentlyViewed = () => request<Product[]>('/history')
-export const registerView = (productId: string) =>
-  request<void>(`/history/${productId}`, { method: 'POST' })
-export const clearHistory = () => request<void>('/history', { method: 'DELETE' })
+// Retorna array vazio silenciosamente se a rota ainda não existir no backend
+export async function getRecentlyViewed(): Promise<Product[]> {
+  try {
+    const res = await request<{ success: boolean; data: Product[] }>('/history')
+    return res?.data ?? (Array.isArray(res) ? (res as Product[]) : [])
+  } catch {
+    return []
+  }
+}
+
+export async function registerView(productId: string): Promise<void> {
+  try {
+    await request<void>(`/history/${productId}`, { method: 'POST' })
+  } catch {
+    // silencia erro se rota não existir ainda
+  }
+}
+
+export async function clearHistory(): Promise<void> {
+  try {
+    await request<void>('/history', { method: 'DELETE' })
+  } catch {
+    // silencia erro se rota não existir ainda
+  }
+}
