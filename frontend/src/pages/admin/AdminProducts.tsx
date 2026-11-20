@@ -17,7 +17,7 @@ export default function AdminProducts() {
       return
     }
     getProducts()
-      .then(setProducts)
+      .then((data) => setProducts(Array.isArray(data) ? data : []))
       .finally(() => setLoading(false))
   }, [user, navigate])
 

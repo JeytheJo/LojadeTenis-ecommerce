@@ -22,9 +22,10 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 }
 
 // ----- Produtos (MongoDB) -----
-// Backend retorna: { success, data: { products: [], pagination: {} } }
 export async function getProducts(): Promise<Product[]> {
-  const res = await request<{ success: boolean; data: { products: Product[] } }>('/products')
+  const res = await request<{ success: boolean; data: { products: Product[]; pagination?: unknown } }>(
+    '/products'
+  )
   return res?.data?.products ?? []
 }
 
@@ -42,11 +43,10 @@ export async function createProduct(data: Omit<Product, '_id' | 'createdAt'>): P
 }
 
 // ----- Histórico "vistos recentemente" (Redis) -----
-// Retorna array vazio silenciosamente se a rota ainda não existir no backend
 export async function getRecentlyViewed(): Promise<Product[]> {
   try {
     const res = await request<{ success: boolean; data: Product[] }>('/history')
-    return res?.data ?? (Array.isArray(res) ? (res as Product[]) : [])
+    return res?.data ?? (Array.isArray(res) ? (res as unknown as Product[]) : [])
   } catch {
     return []
   }
@@ -56,7 +56,7 @@ export async function registerView(productId: string): Promise<void> {
   try {
     await request<void>(`/history/${productId}`, { method: 'POST' })
   } catch {
-    // silencia erro se rota não existir ainda
+    // histórico ainda não implementado no backend — ignora silenciosamente
   }
 }
 
@@ -64,6 +64,6 @@ export async function clearHistory(): Promise<void> {
   try {
     await request<void>('/history', { method: 'DELETE' })
   } catch {
-    // silencia erro se rota não existir ainda
+    // idem
   }
 }

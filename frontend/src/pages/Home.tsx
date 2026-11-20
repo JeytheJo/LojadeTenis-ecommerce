@@ -16,7 +16,7 @@ export default function Home() {
 
   useEffect(() => {
     getProducts()
-      .then(setProducts)
+      .then((data) => setProducts(Array.isArray(data) ? data : []))
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
   }, [])

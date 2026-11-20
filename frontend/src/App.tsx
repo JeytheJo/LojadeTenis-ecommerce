@@ -19,16 +19,16 @@ export default function App() {
       <CartProvider>
         <BrowserRouter>
           <Header />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/produto/:id" element={<ProductDetail />} />
-            <Route path="/carrinho" element={<Cart />} />
-            <Route path="/pedido-whatsapp" element={<WhatsAppOrder />} />
-            <Route path="/vistos-recentemente" element={<RecentlyViewed />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/produtos" element={<AdminProducts />} />
-            <Route path="/admin/produtos/novo" element={<AdminNewProduct />} />
-          </Routes>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/produto/:id" element={<ProductDetail />} />
+              <Route path="/carrinho" element={<Cart />} />
+              <Route path="/pedido-whatsapp" element={<WhatsAppOrder />} />
+              <Route path="/vistos-recentemente" element={<RecentlyViewed />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/produtos" element={<AdminProducts />} />
+              <Route path="/admin/produtos/novo" element={<AdminNewProduct />} />
+            </Routes>
         </BrowserRouter>
       </CartProvider>
     </AuthProvider>
