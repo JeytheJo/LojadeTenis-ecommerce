@@ -3,7 +3,11 @@ import { Heart, Plus } from 'lucide-react'
 import type { Product } from '../types/product'
 import { formatBRL } from '../lib/whatsapp'
 
+const PARCELAS = 3
+
 export default function ProductCard({ product, onAdd }: { product: Product; onAdd?: (p: Product) => void }) {
+  const valorParcela = product.price / PARCELAS
+
   return (
     <Link to={`/produto/${product._id}`} className="flex flex-col gap-[12px] w-[310px]">
       <div className="relative w-[310px] h-[320px] bg-sand">
@@ -12,6 +16,12 @@ export default function ProductCard({ product, onAdd }: { product: Product; onAd
         ) : (
           <div className="w-full h-full flex items-center justify-center text-steel text-[12px]">
             Sem imagem
+          </div>
+        )}
+        {/* Camada do Figma: tag "MAIS VENDIDO" (canto superior esquerdo do card) */}
+        {product.featured && (
+          <div className="absolute top-[12px] left-[12px] bg-navy px-[8px] py-[5px]">
+            <p className="text-offwhite text-[9px] font-medium">MAIS VENDIDO</p>
           </div>
         )}
         <button
@@ -41,6 +51,9 @@ export default function ProductCard({ product, onAdd }: { product: Product; onAd
           <Plus className="w-5 h-5 text-offwhite" />
         </button>
       </div>
+      <p className="font-sans text-steel text-[12px]">
+        ou {PARCELAS}x de {formatBRL(valorParcela)}
+      </p>
     </Link>
   )
 }

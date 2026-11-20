@@ -9,6 +9,7 @@ export interface Product {
   description?: string
   imageUrl?: string
   createdAt?: string
+  featured?: boolean
 }
 
 export interface CartItem {
