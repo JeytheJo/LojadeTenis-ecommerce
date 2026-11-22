@@ -1,9 +1,15 @@
 import type { Product } from '../types/product'
+import { supabase } from './supabase'
 
 const API_URL = import.meta.env.VITE_API_URL as string
 
+async function getAuthToken(): Promise<string | null> {
+  const { data: { session } } = await supabase.auth.getSession()
+  return session?.access_token ?? null
+}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = localStorage.getItem('kicksco_token')
+  const token = await getAuthToken()
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {

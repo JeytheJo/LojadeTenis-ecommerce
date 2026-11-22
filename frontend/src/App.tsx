@@ -26,8 +26,22 @@ export default function App() {
               <Route path="/pedido-whatsapp" element={<WhatsAppOrder />} />
               <Route path="/vistos-recentemente" element={<RecentlyViewed />} />
               <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin/produtos" element={<AdminProducts />} />
-              <Route path="/admin/produtos/novo" element={<AdminNewProduct />} />
+              <Route
+                path="/admin/produtos"
+                element={
+                  <ProtectedRoute>
+                    <AdminProducts />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/produtos/novo"
+                element={
+                  <ProtectedRoute>
+                    <AdminNewProduct />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
         </BrowserRouter>
       </CartProvider>

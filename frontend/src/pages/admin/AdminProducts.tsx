@@ -11,6 +11,9 @@ export default function AdminProducts() {
   const { signOut } = useAuth()
   const navigate = useNavigate()
 
+  // A sessão já é garantida pelo <ProtectedRoute> em App.tsx — aqui só
+  // buscamos os produtos, sem checar/redirecionar de novo (isso causava
+  // o "flash" de voltar pro login: duas checagens de sessão competindo).
   useEffect(() => {
     getProducts()
       .then((data) => setProducts(Array.isArray(data) ? data : []))
