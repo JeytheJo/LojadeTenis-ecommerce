@@ -8,18 +8,19 @@ import { useAuth } from '../../context/AuthContext'
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
-  const { user, logout } = useAuth()
+  const { session, loading: authLoading, signOut } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!user) {
+    if (authLoading) return
+    if (!session) {
       navigate('/admin/login')
       return
     }
     getProducts()
       .then((data) => setProducts(Array.isArray(data) ? data : []))
       .finally(() => setLoading(false))
-  }, [user, navigate])
+  }, [session, authLoading, navigate])
 
   const categorias = new Set(products.map((p) => p.category)).size
 
@@ -38,8 +39,8 @@ export default function AdminProducts() {
             Ver loja
           </Link>
           <button
-            onClick={() => {
-              logout()
+            onClick={async () => {
+              await signOut()
               navigate('/admin/login')
             }}
             className="font-medium text-navy text-[13px]"

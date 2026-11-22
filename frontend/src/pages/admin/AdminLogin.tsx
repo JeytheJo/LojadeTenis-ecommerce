@@ -7,7 +7,7 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const { login } = useAuth()
+  const { signIn } = useAuth()
   const navigate = useNavigate()
 
   async function handleSubmit(e: React.FormEvent) {
@@ -15,7 +15,11 @@ export default function AdminLogin() {
     setError(null)
     setLoading(true)
     try {
-      await login(email, password)
+      const { error: signInError } = await signIn(email, password)
+      if (signInError) {
+        setError(signInError)
+        return
+      }
       navigate('/admin/produtos')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'E-mail ou senha inválidos.')

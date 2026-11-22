@@ -47,14 +47,13 @@ export default function Home() {
             <p>Seu jeito de viver.</p>
           </div>
           <p className="font-sans text-navy text-[16px]">
-            Design que acolhe, materiais que duram. Encontre o que faz a sua casa ser você.
+            Design que acolhe, materiais que duram. Encontre o que faz a seu estilo ser você.
           </p>
           <Link to="/" className="bg-navy flex gap-[24px] items-center p-[16px] w-fit">
             <p className="font-medium text-offwhite text-[14px]">Explorar coleção</p>
             <ArrowRight className="w-5 h-5 text-offwhite" />
           </Link>
         </div>
-        {/* Camada do Figma: "campanha_nova_coleção_de_tênis" (Hero), 780 × 560, exportada em 2x → public/campanha-home.png */}
         <img
           src="/campanha-home.png"
           alt="Nova coleção Kicks&Co."
@@ -114,16 +113,27 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Catálogo / Mais vendidos */}
+      {/* Catálogo / "Os favoritos da casa" */}
       <div className="flex flex-col gap-[32px] pb-[64px] pt-[40px] px-[64px] w-full">
         <div className="flex items-center justify-between w-full">
-          <p className="font-display text-ink text-[30px]">
-            {categoriaFiltro ? `Categoria: ${categoriaFiltro}` : 'Catálogo de tênis'}
-          </p>
-          {categoriaFiltro && (
-            <Link to="/" className="font-sans text-navy text-[13px] underline">
-              Ver todos os produtos
+          <div className="flex flex-col gap-[6px]">
+            <p className="font-display text-ink text-[36px]">
+              {categoriaFiltro ? `Categoria: ${categoriaFiltro}` : 'Os favoritos da casa'}
+            </p>
+            {!categoriaFiltro && (
+              <p className="font-sans text-navy text-[14px]">Peças que conquistam, todos os dias.</p>
+            )}
+          </div>
+          {categoriaFiltro ? (
+            <Link to="/" className="flex items-center gap-[10px]">
+              <p className="font-sans text-ink text-[12px]">Ver todos os produtos</p>
+              <ArrowUpRight className="w-5 h-5 text-navy" />
             </Link>
+          ) : (
+            <div className="flex items-center gap-[10px]">
+              <p className="font-sans text-ink text-[12px]">Ver todos os produtos</p>
+              <ArrowUpRight className="w-5 h-5 text-navy" />
+            </div>
           )}
         </div>
 
@@ -152,6 +162,33 @@ export default function Home() {
               onAdd={(p) => addItem(p, p.sizes?.[0] ?? 0)}
             />
           ))}
+        </div>
+      </div>
+
+      {/* coleção Editorial */}
+      <div className="px-[64px] pt-[8px] pb-[64px] w-full">
+        <div className="bg-navy flex w-full">
+          {/* camada do Figma: "Editorial · Tênis no dia a dia", exportada 2x → public/editorial.png */}
+          <img
+            src="/editorial.png"
+            alt="Editorial Kicks&Co."
+            className="w-[656px] h-[384px] object-cover hidden md:block"
+          />
+          <div className="w-[656px] p-[48px] flex flex-col gap-[20px]">
+            <p className="font-semibold text-offwhite text-[10px]">A ESSÊNCIA Kicks&Co.</p>
+            <div className="font-display text-offwhite text-[48px] leading-[49.56px]">
+              <p>Menos excesso.</p>
+              <p>Mais significado.</p>
+            </div>
+            <p className="font-sans text-offwhite text-[16px] max-w-[500px]">
+              Acreditamos em um estilo que conta histórias. Por isso, reunimos peças com design
+              atemporal, materiais naturais e cuidado em cada detalhe.
+            </p>
+            <Link to="/" className="flex items-center gap-[16px] py-[8px]">
+              <p className="font-medium text-offwhite text-[12px]">Conheça nossa história</p>
+              <ArrowUpRight className="w-5 h-5 text-offwhite" />
+            </Link>
+          </div>
         </div>
       </div>
 

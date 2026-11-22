@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { createProduct } from '../../lib/api'
 import { useAuth } from '../../context/AuthContext'
@@ -15,12 +15,14 @@ export default function AdminNewProduct() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { session, loading: authLoading } = useAuth()
 
-  if (!user) {
-    navigate('/admin/login')
-    return null
-  }
+  useEffect(() => {
+    if (authLoading) return
+    if (!session) navigate('/admin/login')
+  }, [session, authLoading, navigate])
+
+  if (authLoading || !session) return null
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
