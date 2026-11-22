@@ -8,19 +8,14 @@ import { useAuth } from '../../context/AuthContext'
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
-  const { session, loading: authLoading, signOut } = useAuth()
+  const { signOut } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (authLoading) return
-    if (!session) {
-      navigate('/admin/login')
-      return
-    }
     getProducts()
       .then((data) => setProducts(Array.isArray(data) ? data : []))
       .finally(() => setLoading(false))
-  }, [session, authLoading, navigate])
+  }, [])
 
   const categorias = new Set(products.map((p) => p.category)).size
 
