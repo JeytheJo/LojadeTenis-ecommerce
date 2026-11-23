@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
-import { Header } from './components/layout/Header';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
 
 import Home from './pages/Home'
@@ -18,7 +17,6 @@ export default function App() {
     <AuthProvider>
       <CartProvider>
         <BrowserRouter>
-          <Header />
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/produto/:id" element={<ProductDetail />} />
