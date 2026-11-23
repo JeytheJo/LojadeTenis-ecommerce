@@ -11,13 +11,9 @@ export default function AdminProducts() {
   const { signOut } = useAuth()
   const navigate = useNavigate()
 
-<<<<<<< Updated upstream
-  // A sessão já é garantida pelo <ProtectedRoute> em App.tsx — aqui só
-  // buscamos os produtos, sem checar/redirecionar de novo (isso causava
-  // o "flash" de voltar pro login: duas checagens de sessão competindo).
-=======
   // A sessão já é garantida pelo <ProtectedRoute> em App.tsx.
->>>>>>> Stashed changes
+  // Aqui só buscamos os produtos, sem checar/redirecionar de novo.
+  // Isso evita duas checagens de sessão competindo.
   useEffect(() => {
     getProducts()
       .then((data) => setProducts(Array.isArray(data) ? data : []))
@@ -116,3 +112,4 @@ export default function AdminProducts() {
     </div>
   )
 }
+```
