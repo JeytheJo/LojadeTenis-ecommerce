@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 
-const WHATSAPP_NUMBER = '5586981115718' 
+const WHATSAPP_NUMBER = '5586999314882' 
 
 function formatBRL(value: number): string {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })

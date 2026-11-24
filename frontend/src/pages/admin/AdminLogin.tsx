@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom' // Importação do Link adicionada
+import { ArrowLeft } from 'lucide-react' // Ícone de seta importado
 import { useAuth } from '../../context/AuthContext'
-
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('')
@@ -28,7 +28,17 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-offwhite px-[24px]">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-offwhite px-[24px] relative">
+      
+      {/* Link para voltar à Home no canto superior esquerdo */}
+      <Link 
+        to="/" 
+        className="absolute top-[32px] left-[32px] flex items-center gap-[8px] font-sans text-[13px] text-steel hover:text-navy transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Voltar para a loja
+      </Link>
+
       <div className="flex flex-col gap-[24px] w-full max-w-[380px]">
         <p className="font-display text-ink text-[32px] text-center">Kicks&amp;Co.</p>
         <p className="font-sans text-steel text-[13px] text-center">Painel administrativo</p>
