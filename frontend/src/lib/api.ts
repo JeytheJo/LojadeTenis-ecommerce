@@ -8,12 +8,23 @@ async function getAuthToken(): Promise<string | null> {
   return session?.access_token ?? null
 }
 
+const VISITOR_KEY = 'kicksco:visitorId'
+function getVisitorId(): string {
+  let id = localStorage.getItem(VISITOR_KEY)
+  if (!id) {
+    id = crypto.randomUUID()
+    localStorage.setItem(VISITOR_KEY, id)
+  }
+  return id
+}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = await getAuthToken()
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      'X-Visitor-Id': getVisitorId(),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers || {}),
     },
@@ -27,6 +38,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return res.json()
 }
 
+// ----- Produtos (MongoDB) -----
 export async function getProducts(): Promise<Product[]> {
   const res = await request<{ success: boolean; data: { products: Product[]; pagination?: unknown } }>(
     '/products'

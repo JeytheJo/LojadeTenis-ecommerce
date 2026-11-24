@@ -1,60 +1,100 @@
-import { useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
-import { buildWhatsAppLink, buildWhatsAppMessage, formatBRL } from '../lib/whatsapp'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
+
+const WHATSAPP_NUMBER = '5586981115718' 
+
+function formatBRL(value: number): string {
+  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+}
 
 export default function WhatsAppOrder() {
-  const { items, total, clear } = useCart()
   const navigate = useNavigate()
+  const { items, totalPrice, clearCart } = useCart()
 
-  useEffect(() => {
-    if (items.length === 0) navigate('/')
-  }, [items.length, navigate])
+  // Filtra itens inválidos antes de renderizar
+  const validItems = items.filter((i) => i && i.product && i.product._id)
 
-  if (items.length === 0) return null
+  if (validItems.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-[16px] px-[64px]">
+        <p className="font-sans text-steel text-[13px]">Sua sacola está vazia.</p>
+        <button
+          onClick={() => navigate('/')}
+          className="font-sans text-[13px] text-navy underline"
+        >
+          Voltar ao catálogo
+        </button>
+      </div>
+    )
+  }
 
-  const mensagem = buildWhatsAppMessage(items)
-  const link = buildWhatsAppLink(items)
+  // Monta o texto da mensagem
+  const linhasProdutos = validItems
+    .map(
+      (i) =>
+        `${i.quantity}x ${i.product.nome} (${i.product.cor}, tam. ${i.product.tamanho}) - ${formatBRL(i.product.preco * i.quantity)}`
+    )
+    .join('\n')
+
+  const mensagem = [
+    'Olá, Kicks&Co.! Quero fazer este pedido:',
+    '',
+    linhasProdutos,
+    '',
+    `Total: ${formatBRL(totalPrice)}`,
+    '',
+    'Podem confirmar a disponibilidade e o prazo de entrega?',
+  ].join('\n')
 
   function handleEnviar() {
-    window.open(link, '_blank')
-    clear()
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensagem)}`
+    window.open(url, '_blank')
+    clearCart()
+    navigate('/')
   }
 
   return (
-    <div className="flex flex-col w-full">
-      <Header />
-      <div className="flex flex-col gap-[24px] px-[64px] py-[64px] max-w-[640px]">
-        <p className="font-display text-ink text-[28px]">Finalizar pedido pelo WhatsApp</p>
-        <p className="font-sans text-steel text-[13px]">
-          Revise a mensagem abaixo. Ao confirmar, o WhatsApp abrirá com o pedido já formatado, pronto
-          para enviar para a loja.
+    <div className="flex flex-col w-full min-h-screen">
+      {/* Header mínimo sem ícones de sacola/nav para não confundir */}
+      <header className="w-full px-[64px] py-[24px] border-b border-lightgray">
+        <span className="font-display text-ink text-[20px]">Kicks&amp;Co.</span>
+      </header>
+
+      <main className="flex flex-col gap-[32px] px-[64px] py-[48px] max-w-[720px]">
+        <h1 className="font-display text-ink text-[32px]">Finalizar pedido pelo WhatsApp</h1>
+
+        <p className="font-sans text-navy text-[13px]">
+          Revise a mensagem abaixo. Ao confirmar, o WhatsApp abrirá com o pedido já formatado,
+          pronto para enviar para a loja.
         </p>
 
-        <pre className="bg-offwhite font-sans text-[13px] text-ink whitespace-pre-wrap p-[20px] border border-sand">
+        {/* Preview da mensagem */}
+        <pre className="bg-offwhite border border-lightgray p-[24px] font-sans text-[13px] text-ink leading-relaxed whitespace-pre-wrap rounded-none">
           {mensagem}
         </pre>
 
-        <div className="flex justify-between font-semibold text-[15px] text-ink">
-          <span>Total do pedido</span>
-          <span>{formatBRL(total)}</span>
+        {/* Total */}
+        <div className="flex items-center justify-between border-t border-lightgray pt-[16px]">
+          <p className="font-sans text-ink text-[14px] font-semibold">Total do pedido</p>
+          <p className="font-display text-ink text-[20px]">{formatBRL(totalPrice)}</p>
         </div>
 
-        <div className="flex gap-[16px]">
-          <Link to="/carrinho" className="font-sans text-navy text-[13px] self-center">
+        {/* Ações */}
+        <div className="flex items-center justify-between pt-[8px]">
+          <button
+            onClick={() => navigate('/carrinho')}
+            className="font-sans text-[13px] text-navy underline"
+          >
             Voltar à sacola
-          </Link>
+          </button>
           <button
             onClick={handleEnviar}
-            className="bg-navy text-offwhite font-sans text-[14px] px-[32px] py-[16px] ml-auto"
+            className="bg-navy text-offwhite font-sans text-[14px] px-[32px] py-[14px] hover:bg-ink transition-colors"
           >
             Enviar pedido via WhatsApp
           </button>
         </div>
-      </div>
-      <Footer />
+      </main>
     </div>
   )
 }

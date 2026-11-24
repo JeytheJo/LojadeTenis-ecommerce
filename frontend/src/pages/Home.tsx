@@ -10,9 +10,9 @@ import type { Product } from '../types/product'
 
 const CATEGORIAS_FIGMA = [
   { label: 'Sneakers', valor: 'sneakers', imagem: '/categorias/sneakers.png' },
-  { label: 'Casual',   valor: 'casual',   imagem: '/categorias/casual.png'   },
-  { label: 'Sport',    valor: 'sport',    imagem: '/categorias/sport.png'    },
-  { label: 'Sociais',  valor: 'sociais',  imagem: '/categorias/sociais.png'  },
+  { label: 'Casual', valor: 'casual', imagem: '/categorias/casual.png' },
+  { label: 'Sport', valor: 'sport', imagem: '/categorias/sport.png' },
+  { label: 'Sociais', valor: 'sociais', imagem: '/categorias/sociais.png' },
 ]
 
 export default function Home() {
@@ -40,6 +40,7 @@ export default function Home() {
   }, [])
 
   const categoriaFiltro = searchParams.get('categoria')
+  const buscaFiltro = searchParams.get('busca')?.trim().toLowerCase() ?? ''
 
   useEffect(() => {
     getProducts()
@@ -48,9 +49,17 @@ export default function Home() {
       .finally(() => setLoading(false))
   }, [])
 
-  const produtosFiltrados = categoriaFiltro
-    ? products.filter((p) => p.categoria === categoriaFiltro)
-    : products
+  let produtosFiltrados = products
+  if (categoriaFiltro) {
+    produtosFiltrados = produtosFiltrados.filter((p) => p.categoria === categoriaFiltro)
+  }
+  if (buscaFiltro) {
+    produtosFiltrados = produtosFiltrados.filter(
+      (p) =>
+        p.nome.toLowerCase().includes(buscaFiltro) ||
+        p.marca.toLowerCase().includes(buscaFiltro)
+    )
+  }
 
   return (
     <div className="flex flex-col w-full">
@@ -90,7 +99,9 @@ export default function Home() {
             return (
               <button
                 key={cat.valor}
-                onClick={() => setSearchParams(ativo ? {} : { categoria: cat.valor })}
+                onClick={() =>
+                  setSearchParams(ativo ? {} : { categoria: cat.valor })
+                }
                 className={`relative h-[220px] overflow-hidden text-left ${ativo ? 'ring-2 ring-navy' : ''}`}
               >
                 <img src={cat.imagem} alt={cat.label} className="w-full h-full object-cover" />
@@ -106,8 +117,10 @@ export default function Home() {
       {/* Catálogo */}
       <section id="catalogo" className="flex flex-col gap-[32px] px-[64px] py-[64px] w-full bg-offwhite">
         <div className="flex items-end justify-between w-full">
-          <p className="font-display text-ink text-[28px]">Os favoritos da casa</p>
-          {categoriaFiltro && (
+          <p className="font-display text-ink text-[28px]">
+            {buscaFiltro ? `Resultados para "${searchParams.get('busca')}"` : 'Os favoritos da casa'}
+          </p>
+          {(categoriaFiltro || buscaFiltro) && (
             <button onClick={() => setSearchParams({})} className="font-sans text-[13px] text-navy">
               Limpar filtro
             </button>

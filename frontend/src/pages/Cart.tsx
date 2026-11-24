@@ -9,7 +9,9 @@ export default function Cart() {
   const { items, removeItem, updateQty, total } = useCart()
   const navigate = useNavigate()
 
-  if (items.length === 0) {
+  const validItems = items.filter((item) => item && item.product && item.product._id)
+
+  if (validItems.length === 0) {
     return (
       <div className="flex flex-col w-full">
         <Header />
@@ -24,13 +26,18 @@ export default function Cart() {
     )
   }
 
+  const totalValido = validItems.reduce(
+    (sum, i) => sum + i.product.preco * i.quantity,
+    0
+  )
+
   return (
     <div className="flex flex-col w-full">
       <Header />
       <div className="grid grid-cols-[1fr_360px] gap-[64px] px-[64px] py-[64px] w-full">
         <div className="flex flex-col gap-[24px]">
           <p className="font-display text-ink text-[28px]">Sua sacola</p>
-          {items.map((item) => (
+          {validItems.map((item) => (
             <div key={item.product._id} className="flex gap-[16px] border-b border-sand pb-[24px]">
               <div className="w-[120px] h-[120px] bg-sand shrink-0">
                 {item.product.imageUrl ? (
@@ -80,11 +87,11 @@ export default function Cart() {
           <p className="font-display text-ink text-[20px]">Resumo</p>
           <div className="flex justify-between font-sans text-[13px] text-steel">
             <span>Subtotal</span>
-            <span>{formatBRL(total)}</span>
+            <span>{formatBRL(totalValido || total)}</span>
           </div>
           <div className="flex justify-between font-semibold text-[15px] text-ink border-t border-sand pt-[12px]">
             <span>Total</span>
-            <span>{formatBRL(total)}</span>
+            <span>{formatBRL(totalValido || total)}</span>
           </div>
           <button
             onClick={() => navigate('/pedido-whatsapp')}
