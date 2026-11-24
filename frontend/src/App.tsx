@@ -11,6 +11,7 @@ import Favorites from './pages/Favorites'
 import AdminLogin from './pages/admin/AdminLogin'
 import AdminProducts from './pages/admin/AdminProducts'
 import AdminNewProduct from './pages/admin/AdminNewProduct'
+import AdminEditProduct from './pages/admin/AdminEditProduct';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <FavoritesProvider>
           <BrowserRouter>
             <Routes>
+              <Route path="/admin/produtos/editar/:id" element={<AdminEditProduct />} />
               <Route path="/" element={<Home />} />
               <Route path="/produto/:id" element={<ProductDetail />} />
               <Route path="/carrinho" element={<Cart />} />

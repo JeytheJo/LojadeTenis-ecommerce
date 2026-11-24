@@ -3,6 +3,7 @@ import { checkServices } from '../services/health.service';
 import productRoutes from './product.routes';
 import authRoutes    from './auth.routes';
 import orderRoutes from './order.routes';
+import historyRouter from './history.routes'
 
 const router = Router();
 
@@ -11,6 +12,7 @@ router.get('/health', async (_req, res) => {
   res.status(report.status === 'ok' ? 200 : 503).json({ project: 'Kicks&Co', ...report });
 });
 
+router.use('/history', historyRouter)
 router.use('/auth',     authRoutes);
 router.use('/products', productRoutes);
 router.use('/orders', orderRoutes);

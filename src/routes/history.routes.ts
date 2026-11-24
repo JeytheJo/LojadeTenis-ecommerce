@@ -1,66 +1,35 @@
-import { Router, Request, Response } from 'express'
-import { redisClient } from '../config/redis' 
-import { ProductModel } from '../models/nosql/Products' 
+import { Router, Request, Response } from 'express';
+import { getHistory } from '../config/redis';
+import { Product } from '../models/nosql/Products';
 
-const router = Router()
+const router = Router();
 
-const MAX_HISTORY = 10
-
-function getVisitorKey(req: Request): string {
-  const visitorId = (req.header('X-Visitor-Id') as string) || 'anon'
-  return `history:${visitorId}`
+function getSessionId(req: Request): string {
+  return req.ip ?? 'anonymous';
 }
 
+
 router.get('/', async (req: Request, res: Response) => {
-  try {
-    const key = getVisitorKey(req)
-    const ids = await redisClient.lRange(key, 0, MAX_HISTORY - 1)
+  const sessionId = getSessionId(req);
+  const productIds = await getHistory(sessionId);
 
-    if (ids.length === 0) {
-      return res.json({ success: true, data: [] })
-    }
-
-    const produtos = await ProductModel.find({ _id: { $in: ids } }).lean()
-
-    // Mongo não garante a ordem do $in — reordenamos manualmente para
-    // bater com a ordem do Redis (mais recente primeiro).
-    const porId = new Map(produtos.map((p: any) => [String(p._id), p]))
-    const ordenados = ids.map((id) => porId.get(id)).filter(Boolean)
-
-    res.json({ success: true, data: ordenados })
-  } catch (err) {
-    console.error('Erro ao buscar histórico:', err)
-    res.status(500).json({ success: false, message: 'Erro ao buscar histórico' })
+  if (!productIds || productIds.length === 0) {
+    res.json({ success: true, data: [] });
+    return;
   }
-})
 
-router.post('/:productId', async (req: Request, res: Response) => {
-  try {
-    const key = getVisitorKey(req)
-    const { productId } = req.params
+  const products = await Product.find({ _id: { $in: productIds } }).lean();
+  const productMap = new Map(products.map((p) => [String(p._id), p]));
+  const orderedProducts = productIds.map((id) => productMap.get(id)).filter(Boolean);
 
-    await redisClient.lRem(key, 0, productId)
-    await redisClient.lPush(key, productId)
-    await redisClient.lTrim(key, 0, MAX_HISTORY - 1)
+  res.json({ success: true, data: orderedProducts });
+});
 
-    res.status(204).end()
-  } catch (err) {
-    console.error('Erro ao registrar visualização:', err)
-    res.status(500).json({ success: false, message: 'Erro ao registrar visualização' })
-  }
-})
-
-// DELETE /api/history
-// Limpa o histórico do visitante atual.
 router.delete('/', async (req: Request, res: Response) => {
-  try {
-    const key = getVisitorKey(req)
-    await redisClient.del(key)
-    res.status(204).end()
-  } catch (err) {
-    console.error('Erro ao limpar histórico:', err)
-    res.status(500).json({ success: false, message: 'Erro ao limpar histórico' })
-  }
-})
+  const sessionId = getSessionId(req);
+  const { redis } = await import('../config/redis');
+  await redis.del(`history:${sessionId}`);
+  res.status(204).end();
+});
 
-export default router
+export default router;
