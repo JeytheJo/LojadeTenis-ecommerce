@@ -11,12 +11,6 @@ export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
 
-<<<<<<< HEAD
-  // A sessão já é garantida pelo <ProtectedRoute> em App.tsx.
-  // Aqui só buscamos os produtos, sem checar/redirecionar de novo.
-  // Isso evita duas checagens de sessão competindo.
-=======
->>>>>>> 275f2cc (feat: update product detail and recently viewed pages with improved loading states and error handling)
   useEffect(() => {
     if (authLoading) return
     if (!session) {
@@ -90,4 +84,3 @@ export default function AdminProducts() {
     </div>
   )
 }
-```

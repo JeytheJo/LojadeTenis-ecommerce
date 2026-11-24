@@ -1,6 +1,6 @@
 import type { CartItem } from '../types/product'
 
-const WHATSAPP_NUMBER = '55XXXXXXXXXXX'
+const WHATSAPP_NUMBER = '5586999314882'
 
 export function buildWhatsAppMessage(items: CartItem[]): string {
   const linhas = items.map(

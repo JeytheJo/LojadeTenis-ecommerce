@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { createProduct } from '../../lib/api'
-=======
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { createProduct } from '../../lib/api'
 
 const CATEGORIAS = ['sneakers', 'casual', 'sport', 'sociais']
->>>>>>> 275f2cc (feat: update product detail and recently viewed pages with improved loading states and error handling)
 
 export default function AdminNewProduct() {
   const { session, loading: authLoading } = useAuth()
@@ -26,10 +20,6 @@ export default function AdminNewProduct() {
   const [description, setDescription] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-<<<<<<< HEAD
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
-=======
 
   useEffect(() => {
     if (!authLoading && !session) navigate('/admin/login')
@@ -38,7 +28,6 @@ export default function AdminNewProduct() {
   if (authLoading || !session) {
     return <div className="p-[64px] font-sans text-steel text-[13px]">Carregando...</div>
   }
->>>>>>> 275f2cc (feat: update product detail and recently viewed pages with improved loading states and error handling)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

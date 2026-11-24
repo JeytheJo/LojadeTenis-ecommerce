@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import Header from '../components/Header'
@@ -21,6 +21,24 @@ export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { addItem } = useCart()
 
+  // Parallax vertical: a imagem se move a 40% da velocidade do scroll,
+  // criando profundidade sem sair do container (overflow-hidden).
+  const heroRef = useRef<HTMLElement>(null)
+  const imgRef = useRef<HTMLImageElement>(null)
+
+  useEffect(() => {
+    function onScroll() {
+      if (!heroRef.current || !imgRef.current) return
+      const rect = heroRef.current.getBoundingClientRect()
+      // só anima enquanto a seção estiver visível
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return
+      const progress = -rect.top // pixels que já saíram pelo topo
+      imgRef.current.style.transform = `translateY(${progress * 0.4}px)`
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   const categoriaFiltro = searchParams.get('categoria')
 
   useEffect(() => {
@@ -38,12 +56,14 @@ export default function Home() {
     <div className="flex flex-col w-full">
       <Header />
 
-      {/* Hero / campanha */}
-      <section className="relative w-full h-[560px] bg-navy overflow-hidden">
+      {/* Hero / campanha — parallax vertical */}
+      <section ref={heroRef} className="relative w-full h-[560px] bg-navy overflow-hidden">
         <img
+          ref={imgRef}
           src="/campanha-home.png"
           alt="Campanha nova coleção de tênis"
-          className="w-full h-full object-cover opacity-80"
+          className="w-full h-[140%] object-cover opacity-80 will-change-transform"
+          style={{ transform: 'translateY(0px)', top: '-20%' }}
         />
         <div className="absolute inset-0 flex flex-col justify-end gap-[16px] px-[64px] pb-[64px]">
           <p className="font-display text-offwhite text-[48px] leading-[1.1] max-w-[560px]">
