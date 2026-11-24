@@ -27,7 +27,6 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return res.json()
 }
 
-// ----- Produtos (MongoDB) -----
 export async function getProducts(): Promise<Product[]> {
   const res = await request<{ success: boolean; data: { products: Product[]; pagination?: unknown } }>(
     '/products'

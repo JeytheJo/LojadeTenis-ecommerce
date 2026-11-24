@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { Minus, Plus, Trash2 } from 'lucide-react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { useCart } from '../context/CartContext'
@@ -8,88 +9,91 @@ export default function Cart() {
   const { items, removeItem, updateQty, total } = useCart()
   const navigate = useNavigate()
 
-  return (
-    <div className="bg-offwhite flex flex-col items-start w-full min-h-screen">
-      <Header />
-
-      <div className="flex flex-col gap-[28px] p-[64px] w-full">
-        <p className="font-display text-ink text-[36px]">Seu carrinho</p>
-        <p className="font-sans text-navy text-[14px]">
-          Escolha seus favoritos e prepare o pedido para o WhatsApp.
-        </p>
-
-        {items.length === 0 ? (
-          <div className="bg-sand flex flex-col gap-[20px] p-[40px] w-full">
-            <p className="font-display text-ink text-[28px]">Seu próximo par começa aqui.</p>
-            <p className="font-sans text-navy text-[14px]">Você ainda não adicionou nenhum tênis.</p>
-            <Link to="/" className="bg-navy flex items-center justify-center p-[14px] w-fit font-medium text-offwhite text-[13px]">
-              Explorar produtos →
-            </Link>
-          </div>
-        ) : (
-          <>
-            <div className="flex flex-col gap-[16px] w-full">
-              {items.map((item) => (
-                <div
-                  key={`${item.product._id}-${item.size}`}
-                  className="flex items-center justify-between border-b border-sand py-[16px] w-full gap-4"
-                >
-                  <div className="flex items-center gap-[16px]">
-                    <div className="w-[60px] h-[60px] bg-sand flex items-center justify-center overflow-hidden">
-                      {item.product.imageUrl && (
-                        <img src={item.product.imageUrl} alt={item.product.name} className="w-full h-full object-cover" />
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-medium text-ink text-[14px]">{item.product.name}</p>
-                      <p className="font-sans text-navy text-[12px]">Tamanho {item.size}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-[12px]">
-                    <input
-                      type="number"
-                      min={1}
-                      value={item.quantity}
-                      onChange={(e) => updateQty(item.product._id, item.size, Number(e.target.value))}
-                      className="w-[56px] border border-steel p-[8px] text-center text-[13px]"
-                    />
-                    <p className="font-medium text-ink text-[14px] w-[100px] text-right">
-                      {formatBRL(item.product.price * item.quantity)}
-                    </p>
-                    <button
-                      onClick={() => removeItem(item.product._id, item.size)}
-                      className="text-[12px] text-red-600 underline"
-                    >
-                      Remover
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex items-center justify-between w-full pt-[16px]">
-              <p className="font-medium text-ink text-[16px]">Total</p>
-              <p className="font-semibold text-ink text-[22px]">{formatBRL(total)}</p>
-            </div>
-
-            <button
-              onClick={() => navigate('/pedido-whatsapp')}
-              className="bg-navy flex items-center justify-center p-[16px] w-full font-medium text-offwhite text-[13px]"
-            >
-              Finalizar pedido pelo WhatsApp →
-            </button>
-          </>
-        )}
-
-        <Link
-          to="/"
-          className="bg-offwhite border border-steel flex items-center justify-center p-[14px] font-medium text-navy text-[13px]"
-        >
-          ← Continuar comprando
-        </Link>
+  if (items.length === 0) {
+    return (
+      <div className="flex flex-col w-full">
+        <Header />
+        <div className="flex flex-col items-center gap-[16px] px-[64px] py-[96px]">
+          <p className="font-display text-ink text-[24px]">Sua sacola está vazia</p>
+          <Link to="/" className="font-sans text-navy text-[13px]">
+            Voltar ao catálogo
+          </Link>
+        </div>
+        <Footer />
       </div>
+    )
+  }
 
+  return (
+    <div className="flex flex-col w-full">
+      <Header />
+      <div className="grid grid-cols-[1fr_360px] gap-[64px] px-[64px] py-[64px] w-full">
+        <div className="flex flex-col gap-[24px]">
+          <p className="font-display text-ink text-[28px]">Sua sacola</p>
+          {items.map((item) => (
+            <div key={item.product._id} className="flex gap-[16px] border-b border-sand pb-[24px]">
+              <div className="w-[120px] h-[120px] bg-sand shrink-0">
+                {item.product.imageUrl ? (
+                  <img
+                    src={item.product.imageUrl}
+                    alt={item.product.nome}
+                    className="w-full h-full object-cover"
+                  />
+                ) : null}
+              </div>
+              <div className="flex flex-col gap-[6px] flex-1">
+                <p className="font-medium text-ink text-[15px]">{item.product.nome}</p>
+                <p className="font-sans text-steel text-[12px]">
+                  {item.product.cor} · tam. {item.product.tamanho}
+                </p>
+                <p className="font-semibold text-ink text-[14px]">{formatBRL(item.product.preco)}</p>
+                <div className="flex items-center gap-[12px] mt-[4px]">
+                  <button
+                    onClick={() => updateQty(item.product._id, item.quantity - 1)}
+                    className="p-[4px] border border-sand"
+                    aria-label="Diminuir quantidade"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="font-sans text-[13px] w-[20px] text-center">{item.quantity}</span>
+                  <button
+                    onClick={() => updateQty(item.product._id, item.quantity + 1)}
+                    className="p-[4px] border border-sand"
+                    aria-label="Aumentar quantidade"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => removeItem(item.product._id)}
+                    className="ml-[12px] text-steel"
+                    aria-label="Remover item"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex flex-col gap-[16px] bg-offwhite p-[24px] h-fit">
+          <p className="font-display text-ink text-[20px]">Resumo</p>
+          <div className="flex justify-between font-sans text-[13px] text-steel">
+            <span>Subtotal</span>
+            <span>{formatBRL(total)}</span>
+          </div>
+          <div className="flex justify-between font-semibold text-[15px] text-ink border-t border-sand pt-[12px]">
+            <span>Total</span>
+            <span>{formatBRL(total)}</span>
+          </div>
+          <button
+            onClick={() => navigate('/pedido-whatsapp')}
+            className="bg-navy text-offwhite font-sans text-[14px] px-[24px] py-[16px] w-full mt-[8px]"
+          >
+            Comprar via WhatsApp
+          </button>
+        </div>
+      </div>
       <Footer />
     </div>
   )

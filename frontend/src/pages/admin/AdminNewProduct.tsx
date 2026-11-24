@@ -1,27 +1,49 @@
+<<<<<<< HEAD
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { createProduct } from '../../lib/api'
+=======
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
+import { createProduct } from '../../lib/api'
+
+const CATEGORIAS = ['sneakers', 'casual', 'sport', 'sociais']
+>>>>>>> 275f2cc (feat: update product detail and recently viewed pages with improved loading states and error handling)
 
 export default function AdminNewProduct() {
-  // Estados alinhados com o MongoDB
+  const { session, loading: authLoading } = useAuth()
+  const navigate = useNavigate()
+
   const [nome, setNome] = useState('')
   const [marca, setMarca] = useState('')
-  const [categoria, setCategoria] = useState('')
+  const [categoria, setCategoria] = useState(CATEGORIAS[0])
   const [cor, setCor] = useState('')
   const [tamanho, setTamanho] = useState('')
   const [preco, setPreco] = useState('')
   const [estoque, setEstoque] = useState('')
   const [imageUrl, setImageUrl] = useState('')
-  
+  const [description, setDescription] = useState('')
+  const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+<<<<<<< HEAD
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+=======
+
+  useEffect(() => {
+    if (!authLoading && !session) navigate('/admin/login')
+  }, [session, authLoading, navigate])
+
+  if (authLoading || !session) {
+    return <div className="p-[64px] font-sans text-steel text-[13px]">Carregando...</div>
+  }
+>>>>>>> 275f2cc (feat: update product detail and recently viewed pages with improved loading states and error handling)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
-    setLoading(true)
-    
+    setSubmitting(true)
     try {
       await createProduct({
         nome,
@@ -29,130 +51,104 @@ export default function AdminNewProduct() {
         categoria,
         cor,
         tamanho: Number(tamanho),
-        preco: Number(preco.replace(',', '.')),
-        estoque: Number(estoque) || 0,
+        preco: Number(preco),
+        estoque: Number(estoque),
         imageUrl: imageUrl || undefined,
+        description: description || undefined,
+        ativo: true,
       })
-
       navigate('/admin/produtos')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao salvar produto.')
+      setError(err instanceof Error ? err.message : 'Erro ao cadastrar produto')
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
   return (
-    <div className="bg-offwhite flex flex-col items-start w-full min-h-screen">
-      {/* ... cabeçalho igual ... */}
+    <div className="flex flex-col w-full px-[64px] py-[48px] max-w-[560px] gap-[24px]">
+      <p className="font-display text-ink text-[28px]">Cadastrar produto</p>
 
-      <div className="flex flex-col gap-[28px] p-[64px] w-full">
-        {/* ... título igual ... */}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-[16px]">
+        <input
+          required
+          placeholder="Nome"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          className="border border-sand px-[16px] py-[12px] font-sans text-[14px]"
+        />
+        <input
+          required
+          placeholder="Marca"
+          value={marca}
+          onChange={(e) => setMarca(e.target.value)}
+          className="border border-sand px-[16px] py-[12px] font-sans text-[14px]"
+        />
+        <select
+          value={categoria}
+          onChange={(e) => setCategoria(e.target.value)}
+          className="border border-sand px-[16px] py-[12px] font-sans text-[14px]"
+        >
+          {CATEGORIAS.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+        <input
+          required
+          placeholder="Cor"
+          value={cor}
+          onChange={(e) => setCor(e.target.value)}
+          className="border border-sand px-[16px] py-[12px] font-sans text-[14px]"
+        />
+        <input
+          required
+          type="number"
+          placeholder="Tamanho (ex: 42)"
+          value={tamanho}
+          onChange={(e) => setTamanho(e.target.value)}
+          className="border border-sand px-[16px] py-[12px] font-sans text-[14px]"
+        />
+        <input
+          required
+          type="number"
+          step="0.01"
+          placeholder="Preço (R$)"
+          value={preco}
+          onChange={(e) => setPreco(e.target.value)}
+          className="border border-sand px-[16px] py-[12px] font-sans text-[14px]"
+        />
+        <input
+          required
+          type="number"
+          placeholder="Estoque"
+          value={estoque}
+          onChange={(e) => setEstoque(e.target.value)}
+          className="border border-sand px-[16px] py-[12px] font-sans text-[14px]"
+        />
+        <input
+          placeholder="URL da imagem (ex: /products/sku-123.jpg)"
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          className="border border-sand px-[16px] py-[12px] font-sans text-[14px]"
+        />
+        <textarea
+          placeholder="Descrição (opcional)"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="border border-sand px-[16px] py-[12px] font-sans text-[14px]"
+          rows={3}
+        />
 
-        <form onSubmit={handleSubmit} className="bg-offwhite flex flex-col gap-[20px] p-[32px] w-full max-w-[700px]">
-          <div className="flex flex-col gap-[8px]">
-            <label className="font-medium text-ink text-[13px]">Nome do produto *</label>
-            <input
-              required
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              placeholder="Ex.: Ultrabost 22"
-              className="bg-offwhite border border-steel p-[16px] text-[14px] text-navy"
-            />
-          </div>
+        {error && <p className="font-sans text-[12px] text-red-600">{error}</p>}
 
-          <div className="flex gap-[24px]">
-            <div className="flex flex-col gap-[8px] w-1/2">
-              <label className="font-medium text-ink text-[13px]">Marca *</label>
-              <input
-                required
-                value={marca}
-                onChange={(e) => setMarca(e.target.value)}
-                placeholder="Ex.: Adidas"
-                className="bg-offwhite border border-steel p-[16px] text-[14px] text-navy"
-              />
-            </div>
-            <div className="flex flex-col gap-[8px] w-1/2">
-              <label className="font-medium text-ink text-[13px]">Preço (R$) *</label>
-              <input
-                required
-                value={preco}
-                onChange={(e) => setPreco(e.target.value)}
-                placeholder="Ex.: 749,90"
-                className="bg-offwhite border border-steel p-[16px] text-[14px] text-navy"
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-[24px]">
-            <div className="flex flex-col gap-[8px] w-1/2">
-              <label className="font-medium text-ink text-[13px]">Categoria *</label>
-              <input
-                required
-                value={categoria}
-                onChange={(e) => setCategoria(e.target.value)}
-                placeholder="Ex.: Tênis Esportivo"
-                className="bg-offwhite border border-steel p-[16px] text-[14px] text-navy"
-              />
-            </div>
-            <div className="flex flex-col gap-[8px] w-1/2">
-              <label className="font-medium text-ink text-[13px]">Cor *</label>
-              <input
-                required
-                value={cor}
-                onChange={(e) => setCor(e.target.value)}
-                placeholder="Ex.: Preto"
-                className="bg-offwhite border border-steel p-[16px] text-[14px] text-navy"
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-[24px]">
-            <div className="flex flex-col gap-[8px] w-1/2">
-              <label className="font-medium text-ink text-[13px]">Tamanho *</label>
-              <input
-                required
-                type="number"
-                value={tamanho}
-                onChange={(e) => setTamanho(e.target.value)}
-                placeholder="Ex.: 39"
-                className="bg-offwhite border border-steel p-[16px] text-[14px] text-navy"
-              />
-            </div>
-            <div className="flex flex-col gap-[8px] w-1/2">
-              <label className="font-medium text-ink text-[13px]">Estoque *</label>
-              <input
-                required
-                type="number"
-                value={estoque}
-                onChange={(e) => setEstoque(e.target.value)}
-                placeholder="Ex.: 8"
-                className="bg-offwhite border border-steel p-[16px] text-[14px] text-navy"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-[8px]">
-            <label className="font-medium text-ink text-[13px]">URL da Imagem</label>
-            <input
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="Ex.: /produtos/ultraboost.png"
-              className="bg-offwhite border border-steel p-[16px] text-[14px] text-navy"
-            />
-          </div>
-
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-navy text-offwhite p-[16px] font-medium text-[14px] mt-4"
-          >
-            {loading ? 'Salvando...' : 'Cadastrar Produto'}
-          </button>
-        </form>
-      </div>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="bg-navy text-offwhite font-sans text-[14px] px-[24px] py-[14px] disabled:opacity-50"
+        >
+          {submitting ? 'Salvando...' : 'Cadastrar'}
+        </button>
+      </form>
     </div>
   )
 }

@@ -1,19 +1,19 @@
 export interface Product {
   _id: string
-  name: string
-  sku: string
-  price: number
-  category: string
-  brand?: string
-  sizes: number[]
-  description?: string
+  nome: string
+  marca: string
+  categoria: string
+  cor: string
+  tamanho: number
+  preco: number
+  estoque: number
   imageUrl?: string
+  description?: string
+  ativo?: boolean
   createdAt?: string
-  featured?: boolean
 }
 
 export interface CartItem {
   product: Product
-  size: number
   quantity: number
 }

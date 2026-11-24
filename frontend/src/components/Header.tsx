@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Search, User, ShoppingBag } from 'lucide-react'
 import { useCart } from '../context/CartContext'
-import DemoBanner from './DemoBanner'
 
 export default function Header() {
   const { items } = useCart()
@@ -9,7 +8,11 @@ export default function Header() {
 
   return (
     <div className="flex flex-col items-start w-full">
-      <DemoBanner />
+      <div className="bg-navy flex items-center justify-center py-[10px] w-full">
+        <p className="text-offwhite text-[11px] font-sans">
+          Um estilo com mais significado. Frete grátis em compras acima de R$ 299.
+        </p>
+      </div>
       <div className="bg-offwhite flex items-center justify-between px-[64px] py-[24px] w-full">
         <Link to="/">
           <p className="font-display text-ink text-[32px]">Kicks&amp;Co.</p>

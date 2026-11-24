@@ -1,114 +1,92 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 import { getProducts } from '../../lib/api'
 import { formatBRL } from '../../lib/whatsapp'
 import type { Product } from '../../types/product'
-import { useAuth } from '../../context/AuthContext'
 
 export default function AdminProducts() {
+  const { session, loading: authLoading, signOut } = useAuth()
+  const navigate = useNavigate()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
-  const { signOut } = useAuth()
-  const navigate = useNavigate()
 
+<<<<<<< HEAD
   // A sessão já é garantida pelo <ProtectedRoute> em App.tsx.
   // Aqui só buscamos os produtos, sem checar/redirecionar de novo.
   // Isso evita duas checagens de sessão competindo.
+=======
+>>>>>>> 275f2cc (feat: update product detail and recently viewed pages with improved loading states and error handling)
   useEffect(() => {
+    if (authLoading) return
+    if (!session) {
+      navigate('/admin/login')
+      return
+    }
     getProducts()
       .then((data) => setProducts(Array.isArray(data) ? data : []))
+      .catch(() => setProducts([]))
       .finally(() => setLoading(false))
-  }, [])
+  }, [session, authLoading, navigate])
 
-  const categorias = new Set(products.map((p) => p.category)).size
+  if (authLoading || !session) {
+    return <div className="p-[64px] font-sans text-steel text-[13px]">Carregando...</div>
+  }
+
+  const categorias = new Set(products.map((p) => p.categoria)).size
 
   return (
-    <div className="bg-offwhite flex flex-col items-start w-full min-h-screen">
-      <div className="bg-navy flex items-center justify-center py-[9px] w-full">
-        <p className="text-offwhite text-[10px] font-medium">ÁREA ADMINISTRATIVA · SUPABASE AUTH</p>
-      </div>
-      <div className="flex items-center justify-between px-[64px] py-[20px] w-full">
-        <Link to="/">
-          <p className="font-display text-navy text-[32px]">Kicks&amp;Co.</p>
-        </Link>
-        <p className="font-semibold text-navy text-[11px]">ADMINISTRAÇÃO</p>
+    <div className="flex flex-col w-full px-[64px] py-[48px] gap-[32px]">
+      <div className="flex items-center justify-between w-full">
+        <div>
+          <p className="font-display text-ink text-[28px]">Produtos cadastrados</p>
+          <p className="font-sans text-steel text-[13px]">
+            {products.length} produtos · {categorias} categorias
+          </p>
+        </div>
         <div className="flex gap-[16px]">
-          <Link to="/" className="font-medium text-navy text-[13px]">
-            Ver loja
-          </Link>
-          <button
-            onClick={async () => {
-              await signOut()
-              navigate('/admin/login')
-            }}
-            className="font-medium text-navy text-[13px]"
+          <Link
+            to="/admin/produtos/novo"
+            className="bg-navy text-offwhite font-sans text-[13px] px-[20px] py-[12px]"
           >
+            + Novo produto
+          </Link>
+          <button onClick={() => signOut()} className="font-sans text-[13px] text-steel">
             Sair
           </button>
         </div>
       </div>
 
-      <div className="flex flex-col gap-[28px] p-[64px] w-full">
-        <div className="flex items-center justify-between w-full">
-          <div>
-            <p className="font-display text-ink text-[36px]">Produtos</p>
-            <p className="font-semibold text-navy text-[10px]">MONGODB · LISTAGEM</p>
-          </div>
-          <Link
-            to="/admin/produtos/novo"
-            className="bg-navy flex items-center justify-center p-[16px] font-medium text-offwhite text-[13px]"
-          >
-            + Novo produto
-          </Link>
-        </div>
-
-        <div className="flex gap-[24px] flex-wrap">
-          <div className="bg-sand flex flex-col gap-[8px] p-[24px] w-[300px]">
-            <p className="font-display text-ink text-[26px]">{products.length}</p>
-            <p className="font-sans text-navy text-[12px]">Produtos publicados</p>
-          </div>
-          <div className="bg-sand flex flex-col gap-[8px] p-[24px] w-[300px]">
-            <p className="font-display text-ink text-[26px]">{categorias}</p>
-            <p className="font-sans text-navy text-[12px]">Categorias</p>
-          </div>
-        </div>
-
-        {loading && <p className="font-sans text-navy">Carregando...</p>}
-
-        {!loading && (
-          <div className="bg-offwhite flex flex-col w-full border border-sand">
-            <div className="bg-sand flex gap-[24px] p-[20px] w-full font-semibold text-navy text-[10px]">
-              <p className="w-[350px]">PRODUTO</p>
-              <p className="w-[120px]">SKU</p>
-              <p className="w-[120px]">PREÇO</p>
-              <p className="w-[140px]">AÇÃO</p>
-            </div>
+      {loading ? (
+        <p className="font-sans text-steel text-[13px]">Carregando produtos...</p>
+      ) : (
+        <table className="w-full font-sans text-[13px] text-ink">
+          <thead>
+            <tr className="text-left text-steel border-b border-sand">
+              <th className="py-[8px]">Nome</th>
+              <th>Marca</th>
+              <th>Categoria</th>
+              <th>Cor</th>
+              <th>Tamanho</th>
+              <th>Preço</th>
+              <th>Estoque</th>
+            </tr>
+          </thead>
+          <tbody>
             {products.map((p) => (
-              <div key={p._id} className="border-b border-sand flex gap-[24px] items-center p-[20px] w-full">
-                <div className="flex gap-[16px] items-center w-[350px]">
-                  <div className="w-[48px] h-[48px] bg-sand flex items-center justify-center overflow-hidden">
-                    {p.imageUrl && <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />}
-                  </div>
-                  <p className="font-medium text-ink text-[14px]">{p.name}</p>
-                </div>
-                <p className="font-sans text-navy text-[12px] w-[120px]">{p.sku}</p>
-                <p className="font-medium text-ink text-[13px] w-[120px]">{formatBRL(p.price)}</p>
-                <Link
-                  to={`/produto/${p._id}`}
-                  className="bg-offwhite border border-steel flex items-center justify-center p-[10px] w-[140px] font-medium text-navy text-[13px]"
-                >
-                  Ver produto
-                </Link>
-              </div>
+              <tr key={p._id} className="border-b border-sand">
+                <td className="py-[10px]">{p.nome}</td>
+                <td>{p.marca}</td>
+                <td>{p.categoria}</td>
+                <td>{p.cor}</td>
+                <td>{p.tamanho}</td>
+                <td>{formatBRL(p.preco)}</td>
+                <td>{p.estoque}</td>
+              </tr>
             ))}
-            {products.length === 0 && (
-              <p className="p-[20px] font-sans text-navy text-[13px]">
-                Nenhum produto cadastrado ainda.
-              </p>
-            )}
-          </div>
-        )}
-      </div>
+          </tbody>
+        </table>
+      )}
     </div>
   )
 }

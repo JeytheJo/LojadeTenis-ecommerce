@@ -1,16 +1,11 @@
-// REFERÊNCIA: use este arquivo só se o seu CartContext atual NÃO tiver
-// addItem/removeItem/updateQty/total/clear com esta assinatura.
-// Se já tiver um CartContext funcionando, ignore este arquivo e apenas
-// confira se os nomes batem com o que as páginas esperam.
-
 import { createContext, useContext, useState, ReactNode } from 'react'
 import type { CartItem, Product } from '../types/product'
 
 interface CartContextType {
   items: CartItem[]
-  addItem: (product: Product, size: number) => void
-  removeItem: (productId: string, size: number) => void
-  updateQty: (productId: string, size: number, quantity: number) => void
+  addItem: (product: Product) => void
+  removeItem: (productId: string) => void
+  updateQty: (productId: string, quantity: number) => void
   total: number
   clear: () => void
 }
@@ -20,27 +15,25 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
 
-  function addItem(product: Product, size: number) {
+  function addItem(product: Product) {
     setItems((prev) => {
-      const existing = prev.find((i) => i.product._id === product._id && i.size === size)
+      const existing = prev.find((i) => i.product._id === product._id)
       if (existing) {
         return prev.map((i) =>
-          i.product._id === product._id && i.size === size ? { ...i, quantity: i.quantity + 1 } : i
+          i.product._id === product._id ? { ...i, quantity: i.quantity + 1 } : i
         )
       }
-      return [...prev, { product, size, quantity: 1 }]
+      return [...prev, { product, quantity: 1 }]
     })
   }
 
-  function removeItem(productId: string, size: number) {
-    setItems((prev) => prev.filter((i) => !(i.product._id === productId && i.size === size)))
+  function removeItem(productId: string) {
+    setItems((prev) => prev.filter((i) => i.product._id !== productId))
   }
 
-  function updateQty(productId: string, size: number, quantity: number) {
+  function updateQty(productId: string, quantity: number) {
     setItems((prev) =>
-      prev.map((i) =>
-        i.product._id === productId && i.size === size ? { ...i, quantity: Math.max(1, quantity) } : i
-      )
+      prev.map((i) => (i.product._id === productId ? { ...i, quantity: Math.max(1, quantity) } : i))
     )
   }
 
@@ -48,7 +41,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems([])
   }
 
-  const total = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0)
+  const total = items.reduce((sum, i) => sum + i.product.preco * i.quantity, 0)
 
   return (
     <CartContext.Provider value={{ items, addItem, removeItem, updateQty, total, clear }}>

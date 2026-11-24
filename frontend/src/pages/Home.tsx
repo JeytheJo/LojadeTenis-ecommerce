@@ -1,196 +1,123 @@
 import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import { Truck, Package, CreditCard, ArrowRight, ArrowUpRight } from 'lucide-react'
+import { useSearchParams } from 'react-router-dom'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import ProductCard from '../components/ProductCard'
 import { getProducts } from '../lib/api'
-import type { Product } from '../types/product'
 import { useCart } from '../context/CartContext'
+import type { Product } from '../types/product'
 
 const CATEGORIAS_FIGMA = [
-  { nome: 'Sneakers', imagem: '/categorias/sneakers.png' },
-  { nome: 'Casual', imagem: '/categorias/casual.png' },
-  { nome: 'Sport', imagem: '/categorias/sport.png' },
-  { nome: 'Sociais', imagem: '/categorias/sociais.png' },
-] as const
+  { label: 'Sneakers', valor: 'sneakers', imagem: '/categorias/sneakers.png' },
+  { label: 'Casual',   valor: 'casual',   imagem: '/categorias/casual.png'   },
+  { label: 'Sport',    valor: 'sport',    imagem: '/categorias/sport.png'    },
+  { label: 'Sociais',  valor: 'sociais',  imagem: '/categorias/sociais.png'  },
+]
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [searchParams, setSearchParams] = useSearchParams()
   const { addItem } = useCart()
-  const [searchParams] = useSearchParams()
+
   const categoriaFiltro = searchParams.get('categoria')
 
   useEffect(() => {
     getProducts()
       .then((data) => setProducts(Array.isArray(data) ? data : []))
-      .catch((e) => setError(e.message))
+      .catch(() => setProducts([]))
       .finally(() => setLoading(false))
   }, [])
 
   const produtosFiltrados = categoriaFiltro
-    ? products.filter((p) => p.category?.toLowerCase() === categoriaFiltro.toLowerCase())
+    ? products.filter((p) => p.categoria === categoriaFiltro)
     : products
 
   return (
-    <div className="bg-offwhite flex flex-col items-start w-full min-h-screen">
+    <div className="flex flex-col w-full">
       <Header />
 
-      {/* Hero */}
-      <div className="bg-sand flex items-center w-full h-[560px]">
-        <div className="flex flex-col gap-[24px] p-[64px] max-w-[660px]">
-          <p className="font-semibold text-navy text-[11px]">NOVA COLEÇÃO / ESSENCIAL</p>
-          <div className="font-display text-ink text-[48px] leading-[1.13]">
-            <p>Seu espaço.</p>
-            <p>Seu jeito de viver.</p>
-          </div>
-          <p className="font-sans text-navy text-[16px]">
-            Design que acolhe, materiais que duram. Encontre o que faz a seu estilo ser você.
-          </p>
-          <Link to="/" className="bg-navy flex gap-[24px] items-center p-[16px] w-fit">
-            <p className="font-medium text-offwhite text-[14px]">Explorar coleção</p>
-            <ArrowRight className="w-5 h-5 text-offwhite" />
-          </Link>
-        </div>
+      {/* Hero / campanha */}
+      <section className="relative w-full h-[560px] bg-navy overflow-hidden">
         <img
           src="/campanha-home.png"
-          alt="Nova coleção Kicks&Co."
-          className="w-[780px] h-[560px] object-cover hidden md:block"
+          alt="Campanha nova coleção de tênis"
+          className="w-full h-full object-cover opacity-80"
         />
-      </div>
-
-      {/* Benefícios */}
-      <div className="flex flex-wrap h-auto items-center justify-between px-[64px] py-[30px] w-full gap-6">
-        <div className="flex gap-[14px] items-center">
-          <Truck className="w-6 h-6 text-ink" />
-          <div>
-            <p className="font-medium text-ink text-[13px]">Entrega para todo o Brasil</p>
-            <p className="font-sans text-navy text-[11px]">Frete grátis acima de R$ 299</p>
-          </div>
+        <div className="absolute inset-0 flex flex-col justify-end gap-[16px] px-[64px] pb-[64px]">
+          <p className="font-display text-offwhite text-[48px] leading-[1.1] max-w-[560px]">
+            Nova coleção de tênis
+          </p>
+          <p className="font-sans text-offwhite text-[14px] max-w-[460px]">
+            Peças selecionadas para compor um guarda-roupa com propósito, da trilha à cidade.
+          </p>
+          <a
+            href="#catalogo"
+            className="flex items-center gap-[8px] bg-offwhite text-ink font-sans text-[13px] px-[24px] py-[12px] w-fit"
+          >
+            Ver coleção <ArrowRight className="w-4 h-4" />
+          </a>
         </div>
-        <div className="flex gap-[14px] items-center">
-          <Package className="w-6 h-6 text-ink" />
-          <div>
-            <p className="font-medium text-ink text-[13px]">Sua compra, sem pressa</p>
-            <p className="font-sans text-navy text-[11px]">Troca fácil em até 30 dias</p>
-          </div>
-        </div>
-        <div className="flex gap-[14px] items-center">
-          <CreditCard className="w-6 h-6 text-ink" />
-          <div>
-            <p className="font-medium text-ink text-[13px]">Do seu jeito</p>
-            <p className="font-sans text-navy text-[11px]">Até 6x sem juros no cartão</p>
-          </div>
-        </div>
-      </div>
+      </section>
 
       {/* Categorias */}
-      <div className="flex flex-col gap-[32px] pb-[48px] pt-[56px] px-[64px] w-full">
-        <div className="flex items-center justify-between w-full">
-          <p className="font-display text-ink text-[34px]">Encontre o seu essencial</p>
-          <p className="font-sans text-navy text-[13px]">Explore por categoria</p>
+      <section className="flex flex-col gap-[32px] px-[64px] py-[64px] w-full">
+        <p className="font-display text-ink text-[28px]">Compre por categoria</p>
+        <div className="grid grid-cols-4 gap-[24px] w-full">
+          {CATEGORIAS_FIGMA.map((cat) => {
+            const ativo = categoriaFiltro === cat.valor
+            return (
+              <button
+                key={cat.valor}
+                onClick={() => setSearchParams(ativo ? {} : { categoria: cat.valor })}
+                className={`relative h-[220px] overflow-hidden text-left ${ativo ? 'ring-2 ring-navy' : ''}`}
+              >
+                <img src={cat.imagem} alt={cat.label} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-ink/20 flex items-end p-[16px]">
+                  <p className="font-display text-offwhite text-[18px]">{cat.label}</p>
+                </div>
+              </button>
+            )
+          })}
         </div>
-        <div className="flex gap-[24px] flex-wrap">
-          {CATEGORIAS_FIGMA.map((cat) => (
-            <Link
-              key={cat.nome}
-              to={`/?categoria=${encodeURIComponent(cat.nome)}`}
-              className="flex flex-col gap-[12px] w-[310px]"
-            >
-              <img
-                src={cat.imagem}
-                alt={cat.nome}
-                className="w-[310px] h-[205px]"
-              />
-              <div className="flex items-center justify-between w-[310px]">
-                <p className="font-sans text-ink text-[16px]">{cat.nome}</p>
-                <ArrowUpRight className="w-5 h-5 text-navy" />
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
+      </section>
 
-      {/* Catálogo / "Os favoritos da casa" */}
-      <div className="flex flex-col gap-[32px] pb-[64px] pt-[40px] px-[64px] w-full">
-        <div className="flex items-center justify-between w-full">
-          <div className="flex flex-col gap-[6px]">
-            <p className="font-display text-ink text-[36px]">
-              {categoriaFiltro ? `Categoria: ${categoriaFiltro}` : 'Os favoritos da casa'}
-            </p>
-            {!categoriaFiltro && (
-              <p className="font-sans text-navy text-[14px]">Peças que conquistam, todos os dias.</p>
-            )}
-          </div>
-          {categoriaFiltro ? (
-            <Link to="/" className="flex items-center gap-[10px]">
-              <p className="font-sans text-ink text-[12px]">Ver todos os produtos</p>
-              <ArrowUpRight className="w-5 h-5 text-navy" />
-            </Link>
-          ) : (
-            <div className="flex items-center gap-[10px]">
-              <p className="font-sans text-ink text-[12px]">Ver todos os produtos</p>
-              <ArrowUpRight className="w-5 h-5 text-navy" />
-            </div>
+      {/* Catálogo */}
+      <section id="catalogo" className="flex flex-col gap-[32px] px-[64px] py-[64px] w-full bg-offwhite">
+        <div className="flex items-end justify-between w-full">
+          <p className="font-display text-ink text-[28px]">Os favoritos da casa</p>
+          {categoriaFiltro && (
+            <button onClick={() => setSearchParams({})} className="font-sans text-[13px] text-navy">
+              Limpar filtro
+            </button>
           )}
         </div>
-
-        {loading && <p className="font-sans text-navy">Carregando produtos...</p>}
-        {error && <p className="font-sans text-red-600">Erro ao carregar produtos: {error}</p>}
-        {!loading && !error && products.length === 0 && (
-          <p className="font-sans text-navy">
-            Nenhum produto cadastrado ainda. Acesse a{' '}
-            <Link to="/admin/login" className="underline">
-              área administrativa
-            </Link>{' '}
-            para cadastrar o primeiro.
-          </p>
-        )}
-        {!loading && !error && products.length > 0 && produtosFiltrados.length === 0 && (
-          <p className="font-sans text-navy">
-            Nenhum produto cadastrado com a categoria "{categoriaFiltro}" ainda.
-          </p>
-        )}
-
-        <div className="flex flex-wrap gap-[24px]">
-          {produtosFiltrados.map((product) => (
-            <ProductCard
-              key={product._id}
-              product={product}
-              onAdd={(p) => addItem(p, p.sizes?.[0] ?? 0)}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* coleção Editorial */}
-      <div className="px-[64px] pt-[8px] pb-[64px] w-full">
-        <div className="bg-navy flex w-full">
-          {/* camada do Figma: "Editorial · Tênis no dia a dia", exportada 2x → public/editorial.png */}
-          <img
-            src="/editorial.png"
-            alt="Editorial Kicks&Co."
-            className="w-[656px] h-[384px] object-cover hidden md:block"
-          />
-          <div className="w-[656px] p-[48px] flex flex-col gap-[20px]">
-            <p className="font-semibold text-offwhite text-[10px]">A ESSÊNCIA Kicks&Co.</p>
-            <div className="font-display text-offwhite text-[48px] leading-[49.56px]">
-              <p>Menos excesso.</p>
-              <p>Mais significado.</p>
-            </div>
-            <p className="font-sans text-offwhite text-[16px] max-w-[500px]">
-              Acreditamos em um estilo que conta histórias. Por isso, reunimos peças com design
-              atemporal, materiais naturais e cuidado em cada detalhe.
-            </p>
-            <Link to="/" className="flex items-center gap-[16px] py-[8px]">
-              <p className="font-medium text-offwhite text-[12px]">Conheça nossa história</p>
-              <ArrowUpRight className="w-5 h-5 text-offwhite" />
-            </Link>
+        {loading ? (
+          <p className="font-sans text-steel text-[13px]">Carregando produtos...</p>
+        ) : produtosFiltrados.length === 0 ? (
+          <p className="font-sans text-steel text-[13px]">Nenhum produto encontrado.</p>
+        ) : (
+          <div className="grid grid-cols-4 gap-x-[24px] gap-y-[48px] w-full">
+            {produtosFiltrados.map((p) => (
+              <ProductCard key={p._id} product={p} onAdd={addItem} />
+            ))}
           </div>
+        )}
+      </section>
+
+      {/* Coleção Editorial */}
+      <section className="relative w-full h-[420px] overflow-hidden">
+        <img src="/editorial.png" alt="Coleção editorial" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-ink/30 flex flex-col justify-center gap-[12px] px-[64px]">
+          <p className="font-display text-offwhite text-[32px] max-w-[480px]">
+            Uma coleção editorial, peça por peça
+          </p>
+          <a href="#catalogo" className="flex items-center gap-[6px] text-offwhite font-sans text-[13px] w-fit">
+            Explorar <ArrowUpRight className="w-4 h-4" />
+          </a>
         </div>
-      </div>
+      </section>
 
       <Footer />
     </div>

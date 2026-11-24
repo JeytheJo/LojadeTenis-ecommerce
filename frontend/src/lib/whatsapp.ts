@@ -1,13 +1,15 @@
 import type { CartItem } from '../types/product'
 
-// Troque pelo número real da loja (DDI + DDD + número, só dígitos)
 const WHATSAPP_NUMBER = '55XXXXXXXXXXX'
 
 export function buildWhatsAppMessage(items: CartItem[]): string {
   const linhas = items.map(
-    (i) => `${i.quantity}x ${i.product.name} (tam. ${i.size}) - R$ ${(i.product.price * i.quantity).toFixed(2)}`
+    (i) =>
+      `${i.quantity}x ${i.product.nome} (${i.product.cor}, tam. ${i.product.tamanho}) - R$ ${(
+        i.product.preco * i.quantity
+      ).toFixed(2)}`
   )
-  const total = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0)
+  const total = items.reduce((sum, i) => sum + i.product.preco * i.quantity, 0)
 
   const texto = [
     `Olá, Kicks&Co.! Quero fazer este pedido:`,
@@ -27,6 +29,9 @@ export function buildWhatsAppLink(items: CartItem[]): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(texto)}`
 }
 
-export function formatBRL(value: number): string {
+export function formatBRL(value: number | undefined | null): string {
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    return 'R$ --'
+  }
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
