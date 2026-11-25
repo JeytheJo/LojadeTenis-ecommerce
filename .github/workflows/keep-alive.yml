@@ -12,4 +12,4 @@ jobs:
     steps:
       - name: Ping Render API
         run: |
-          curl -I https://seu-backend.onrender.com/health
+          curl -I https://kicksco-backend.onrender.com/api/health

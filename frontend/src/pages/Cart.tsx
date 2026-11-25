@@ -6,7 +6,7 @@ import { useCart } from '../context/CartContext'
 import { formatBRL } from '../lib/whatsapp'
 
 export default function Cart() {
-  const { items, removeItem, updateQty, total } = useCart()
+  const { items, removeItem, updateQuantity, totalPrice } = useCart()
   const navigate = useNavigate()
 
   const validItems = items.filter((item) => item && item.product && item.product._id)
@@ -25,11 +25,6 @@ export default function Cart() {
       </div>
     )
   }
-
-  const totalValido = validItems.reduce(
-    (sum, i) => sum + i.product.preco * i.quantity,
-    0
-  )
 
   return (
     <div className="flex flex-col w-full">
@@ -56,7 +51,7 @@ export default function Cart() {
                 <p className="font-semibold text-ink text-[14px]">{formatBRL(item.product.preco)}</p>
                 <div className="flex items-center gap-[12px] mt-[4px]">
                   <button
-                    onClick={() => updateQty(item.product._id, item.quantity - 1)}
+                    onClick={() => updateQuantity(item.product._id, item.quantity - 1)}
                     className="p-[4px] border border-sand"
                     aria-label="Diminuir quantidade"
                   >
@@ -64,7 +59,7 @@ export default function Cart() {
                   </button>
                   <span className="font-sans text-[13px] w-[20px] text-center">{item.quantity}</span>
                   <button
-                    onClick={() => updateQty(item.product._id, item.quantity + 1)}
+                    onClick={() => updateQuantity(item.product._id, item.quantity + 1)}
                     className="p-[4px] border border-sand"
                     aria-label="Aumentar quantidade"
                   >
@@ -87,11 +82,11 @@ export default function Cart() {
           <p className="font-display text-ink text-[20px]">Resumo</p>
           <div className="flex justify-between font-sans text-[13px] text-steel">
             <span>Subtotal</span>
-            <span>{formatBRL(totalValido || total)}</span>
+            <span>{formatBRL(totalPrice)}</span>
           </div>
           <div className="flex justify-between font-semibold text-[15px] text-ink border-t border-sand pt-[12px]">
             <span>Total</span>
-            <span>{formatBRL(totalValido || total)}</span>
+            <span>{formatBRL(totalPrice)}</span>
           </div>
           <button
             onClick={() => navigate('/pedido-whatsapp')}
