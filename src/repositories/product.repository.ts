@@ -1,5 +1,5 @@
 import { FilterQuery, Types } from 'mongoose';
-import { Product, IProduct } from '../models/nosql/Product';
+import { Product, IProduct } from '../models/nosql/Products';
 import { PaginationQuery, PaginatedResult } from '../types';
 
 export interface ProductFilters {
