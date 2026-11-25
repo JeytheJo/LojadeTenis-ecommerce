@@ -9,7 +9,6 @@ export interface ProductFilters {
   isActive?: boolean;
 }
 
-
 export async function findAllProducts(
   filters: ProductFilters = {},
   pagination: PaginationQuery = {},
@@ -17,10 +16,10 @@ export async function findAllProducts(
   const { page = 1, limit = 20 } = pagination;
   const skip = (page - 1) * limit;
 
-  const query: FilterQuery<IProduct> = { isActive: filters.isActive ?? true };
+  const query: FilterQuery<IProduct> = { ativo: filters.isActive ?? true };
 
-  if (filters.category) query.category = filters.category;
-  if (filters.brand)    query.brand = filters.brand;
+  if (filters.category) query.categoria = filters.category;
+  if (filters.brand)    query.marca = filters.brand;
   if (filters.search)   query.$text = { $search: filters.search };
 
   const [data, total] = await Promise.all([
@@ -29,7 +28,7 @@ export async function findAllProducts(
   ]);
 
   return {
-    data: data as IProduct[],
+    data: data as unknown as IProduct[],
     total,
     page,
     totalPages: Math.ceil(total / limit),
@@ -40,7 +39,6 @@ export async function findProductById(id: string): Promise<IProduct | null> {
   if (!Types.ObjectId.isValid(id)) return null;
   return Product.findById(id).lean() as Promise<IProduct | null>;
 }
-
 
 export async function createProduct(
   data: Omit<IProduct, '_id' | 'createdAt' | 'updatedAt'>,
@@ -54,7 +52,11 @@ export async function updateProduct(
   data: Partial<Omit<IProduct, '_id' | 'createdAt' | 'updatedAt'>>,
 ): Promise<IProduct | null> {
   if (!Types.ObjectId.isValid(id)) return null;
-  return Product.findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true }).lean() as Promise<IProduct | null>;
+  return Product.findByIdAndUpdate(
+    id,
+    { $set: data },
+    { new: true, runValidators: true },
+  ).lean() as Promise<IProduct | null>;
 }
 
 export async function deleteProduct(id: string): Promise<boolean> {
@@ -65,5 +67,5 @@ export async function deleteProduct(id: string): Promise<boolean> {
 
 /** Soft-delete: só marca como inativo. */
 export async function deactivateProduct(id: string): Promise<IProduct | null> {
-  return updateProduct(id, { isActive: false });
+  return updateProduct(id, { ativo: false });
 }
