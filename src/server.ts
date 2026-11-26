@@ -13,7 +13,10 @@ const app = express();
 
 const PORT = process.env.PORT || 3000
 
-const allowedOrigins = env.CORS_ORIGINS.split(',').map(o => o.trim());
+const allowedOrigins = [
+  ...env.CORS_ORIGINS.split(',').map(o => o.trim()),
+  process.env.FRONTEND_URL,
+].filter((origin): origin is string => Boolean(origin));
 
 app.use(cors({
   origin(origin, callback) {
@@ -27,15 +30,6 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
-
-// Cors
-app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    process.env.FRONTEND_URL as string, // adiciona a URL do Vercel depois
-  ].filter(Boolean),
-  credentials: true,
-}))
 
 // ── Rotas ─────────────────────────────────────────────────────────────────────
 app.use('/api', router);
