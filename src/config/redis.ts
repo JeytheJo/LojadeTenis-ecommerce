@@ -14,7 +14,7 @@ export async function connectRedis(): Promise<void> {
     await redis.ping()
     console.log(':)  Redis (Upstash) conectado')
   } catch (err) {
-    console.error('❌  Falha ao conectar Redis:', err)
+    console.error('X  Falha ao conectar Redis:', err)
     throw err
   }
 }

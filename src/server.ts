@@ -45,13 +45,11 @@ app.use(errorHandler);
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
 async function bootstrap(): Promise<void> {
-  // MongoDB é obrigatório — a API não sobe sem ele
   await connectMongo();
 
-  // Redis é obrigatório — histórico de vistos não funciona sem ele
   await connectRedis();
 
-  // Supabase: falha gera aviso mas não impede o servidor de subir
+  //falha gera aviso mas não impede o servidor de subir
   try {
     await pingSupabase();
     console.log('Supabase conectado');
