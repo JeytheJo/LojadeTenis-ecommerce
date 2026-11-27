@@ -1,4 +1,4 @@
-# 👟 Kicks&Co.
+#  Kicks&Co.
  
 E-commerce de tênis desenvolvido para a 3ª Avaliação da disciplina de **Banco de Dados Avançado**, aplicando o conceito de **Banco de Dados Poliglota**: cada parte do sistema usa a tecnologia de persistência mais adequada ao seu caso de uso.
  
