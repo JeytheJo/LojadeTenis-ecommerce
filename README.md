@@ -1,163 +1,182 @@
-# Kicks&Co. 👟
-
-**E-commerce de tênis** desenvolvido como projeto acadêmico para a disciplina de **Banco de Dados Avançado (2026)**.
-
-A aplicação utiliza uma arquitetura de banco de dados poliglota (*Polyglot Persistence*), combinando diferentes tecnologias para atender às necessidades específicas de cada camada do sistema.
-
-## 🛠️ Tecnologias
-
-| Tecnologia | Aplicação |
+# 👟 Kicks&Co.
+ 
+E-commerce de tênis desenvolvido para a 3ª Avaliação da disciplina de **Banco de Dados Avançado**, aplicando o conceito de **Banco de Dados Poliglota**: cada parte do sistema usa a tecnologia de persistência mais adequada ao seu caso de uso.
+ 
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
+[![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+[![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://upstash.com/)
+[![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com/)
+[![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+ 
+---
+ 
+## 🔗 Links
+ 
+| Recurso | Link |
 |---|---|
-| Node.js + Express | API REST |
-| TypeScript | Tipagem e segurança no desenvolvimento |
-| React + Vite | Interface do usuário (SPA) |
-| Tailwind CSS | Estilização |
-| Supabase | Autenticação administrativa |
-| MongoDB Atlas | Armazenamento do catálogo de produtos |
-| Redis | Histórico de navegação |
-
-## 🏗️ Arquitetura
-
-O projeto está organizado em duas aplicações independentes:
-
-```text
-LojadeTenis-ecommerce/
-├── src/                  # Backend: API REST
-│   └── ...
-├── frontend/             # Frontend: aplicação React
-│   └── ...
-├── .env.example          # Modelo de variáveis do backend
-└── ...
+| 🌐 Deploy (Frontend) | [kicksco.vercel.app](https://lojade-tenis-ecommerce.vercel.app/) |
+| ⚙️ API (Backend) | [kicksco-backend.onrender.com](https://kicksco-backend.onrender.com) |
+| 🎥 Vídeo de demonstração | [Assista aqui](https://SEU-LINK-DO-VIDEO) |
+ 
+> ⚠️ O backend está hospedado no plano gratuito do Render — a primeira requisição após um período de inatividade pode levar alguns segundos para responder (cold start).
+ 
+---
+ 
+## 📋 Sobre o projeto
+ 
+Sistema de e-commerce de catálogo de tênis com fluxo completo: o cliente navega pela vitrine, monta o carrinho, finaliza o pedido e é redirecionado ao WhatsApp com a mensagem já formatada — sem a necessidade de um gateway de pagamento.
+ 
+### Requisitos do edital
+ 
+| Requisito | Status | Tecnologia |
+|---|---|---|
+| Interface gráfica (Web ou Desktop) | ✅ | React + Vite (Web) |
+| Autenticação/Login do Admin | ✅ | Supabase (PostgreSQL) |
+| Cadastro e listagem de produtos | ✅ | MongoDB |
+| Histórico de itens vistos recentemente | ✅ | Redis (Upstash) |
+| Painel Admin — login | ✅ | Supabase |
+| Painel Admin — cadastro de produtos | ✅ | MongoDB |
+| Painel Cliente — vitrine de produtos | ✅ | MongoDB |
+| Carrinho de compras (add/remove/total) | ✅ | Client-side (localStorage) |
+| Botão "Comprar" → redireciona ao WhatsApp | ✅ | — |
+ 
+---
+ 
+## 🏗️ Arquitetura poliglota
+ 
 ```
-
-### Persistência de dados
-
-Cada banco de dados possui uma responsabilidade específica:
-
+┌─────────────────────┐
+│      Frontend        │  React + Vite + TailwindCSS
+│   (Painel Admin e    │
+│    Painel Cliente)   │
+└──────────┬───────────┘
+           │ REST API (Axios)
+┌──────────▼───────────┐
+│       Backend         │  Node.js + Express + TypeScript
+└──┬────────┬────────┬──┘
+   │        │        │
+┌──▼──┐  ┌──▼──┐  ┌──▼────┐
+│Mongo│  │Redis│  │Supabase│
+│DB   │  │     │  │        │
+└─────┘  └─────┘  └────────┘
+Produtos  Vistos   Autenticação
+          recentes do Admin
+```
+ 
 | Camada | Tecnologia | Responsabilidade |
 |---|---|---|
-| Autenticação | Supabase (PostgreSQL) | Gerenciamento de login e sessão do administrador |
-| Catálogo | MongoDB Atlas | Cadastro, armazenamento e consulta de produtos |
-| Histórico | Redis | Armazenamento dos últimos produtos visualizados |
-
-Essa abordagem permite utilizar as características de cada tecnologia de acordo com as necessidades da aplicação.
-
-## 🚀 Executando localmente
-
+| **MongoDB Atlas** | Banco de documentos | Cadastro, listagem, edição e exclusão de produtos |
+| **Supabase (PostgreSQL)** | Banco relacional + Auth | Login e sessão do painel administrativo |
+| **Redis (Upstash)** | Banco em memória (chave-valor) | Histórico de produtos vistos recentemente por visitante |
+| **localStorage** | Armazenamento do navegador | Carrinho de compras e lista de favoritos (sem persistência em servidor) |
+ 
+---
+ 
+## 🛠️ Tecnologias
+ 
+**Backend**
+- Node.js + Express + TypeScript
+- Mongoose (MongoDB)
+- `@supabase/supabase-js`
+- `@upstash/redis`
+- JWT para sessão
+**Frontend**
+- React 18 + Vite
+- TypeScript
+- TailwindCSS
+- React Router
+- Axios
+- Lucide Icons
+**Infraestrutura**
+- MongoDB Atlas (cluster gerenciado)
+- Supabase (auth gerenciada)
+- Upstash Redis (serverless)
+- Render (deploy do backend)
+- Vercel (deploy do frontend)
+---
+ 
+## 💻 Rodando localmente
+ 
 ### Pré-requisitos
-
-- Node.js e npm instalados.
-- Conta no [Supabase](https://supabase.com/).
-- Instância do [MongoDB Atlas](https://www.mongodb.com/atlas).
-- Instância do [Redis](https://redis.io/).
-
-### 1. Backend
-
-Na raiz do projeto, execute:
-
+- Node.js 18+
+- Conta no [MongoDB Atlas](https://www.mongodb.com/atlas), [Supabase](https://supabase.com/) e [Upstash](https://upstash.com/) (ou peça acesso aos bancos já configurados do projeto)
+### 1. Clone o repositório
 ```bash
-cp .env.example .env
+git clone https://github.com/JeytheJo/LojadeTenis-ecommerce.git
+cd LojadeTenis-ecommerce
+```
+ 
+### 2. Backend
+```bash
 npm install
+cp .env.example .env
+# preencha o .env com suas credenciais (veja a seção abaixo)
 npm run dev
 ```
-
-A API estará disponível em:
-
-```text
-http://localhost:3000
-```
-
-Antes de iniciar, configure as credenciais necessárias no arquivo `.env`.
-
-### 2. Frontend
-
-Em outro terminal, execute:
-
+O backend sobe em `http://localhost:3000`.
+ 
+### 3. Frontend
 ```bash
 cd frontend
-cp .env.example .env
 npm install
+cp .env.example .env
+# preencha VITE_API_URL=http://localhost:3000/api
 npm run dev
 ```
-
-A interface estará disponível em:
-
-```text
-http://localhost:5173
+O frontend sobe em `http://localhost:5173`.
+ 
+### Variáveis de ambiente — Backend (`.env`)
+```env
+PORT=3000
+NODE_ENV=development
+MONGO_URI=mongodb+srv://usuario:senha@cluster0.mongodb.net/test?retryWrites=true&w=majority
+SUPABASE_URL=https://seu-projeto.supabase.co
+SUPABASE_ANON_KEY=sua_anon_key
+SUPABASE_SERVICE_ROLE_KEY=sua_service_role_key
+UPSTASH_REDIS_REST_URL=https://seu-endpoint.upstash.io
+UPSTASH_REDIS_REST_TOKEN=seu_token
+JWT_SECRET=seu_segredo
+JWT_EXPIRES_IN=7d
+WHATSAPP_PHONE=5585999999999
+FRONTEND_URL=http://localhost:5173
 ```
-
-**Importante:** inicie o backend antes do frontend, pois a aplicação React depende da API REST para consultar e manipular os dados.
-
-## ⚙️ Variáveis de ambiente
-
-As credenciais e configurações devem ser definidas em arquivos `.env`, seguindo os modelos disponibilizados no repositório.
-
-### Backend — `.env`
-
-Consulte o `.env.example` localizado na raiz do projeto.
-
-Principais variáveis:
-
-| Variável | Finalidade |
-|---|---|
-| `SUPABASE_*` | Configurações de conexão com o Supabase |
-| `MONGO_URI` | String de conexão do MongoDB |
-| `REDIS_URL` | Endereço de conexão com o Redis |
-| `JWT_SECRET` | Chave secreta para operações com JWT |
-| `WHATSAPP_PHONE` | Número utilizado na geração de links do WhatsApp |
-| `CORS_ORIGINS` | Origens autorizadas para requisições à API |
-
-### Frontend — `frontend/.env`
-
+ 
+### Variáveis de ambiente — Frontend (`frontend/.env`)
 ```env
 VITE_API_URL=http://localhost:3000/api
 VITE_SUPABASE_URL=https://seu-projeto.supabase.co
-VITE_SUPABASE_ANON_KEY=sua-anon-key
+VITE_SUPABASE_ANON_KEY=sua_anon_key
 ```
-
-**Atenção:** não compartilhe arquivos `.env` nem credenciais privadas no repositório.
-
-## ☁️ Deploy
-
-A aplicação utiliza serviços independentes para publicação do backend e frontend.
-
-| Componente | Plataforma | Configuração |
-|---|---|---|
-| Backend | [Render](https://render.com) | Build: `npm install && npm run build` |
-| Backend | [Render](https://render.com) | Start: `npm start` |
-| Frontend | [Vercel](https://vercel.com) | Root Directory: `frontend` |
-
-### Configuração após o deploy
-
-Após publicar as aplicações:
-
-1. Configure as variáveis de ambiente do backend no Render.
-2. Configure as variáveis de ambiente do frontend na Vercel.
-3. Atualize `CORS_ORIGINS` no Render com a URL pública do frontend.
-4. Reinicie o serviço do backend para aplicar as configurações.
-
-## 🔌 Principais endpoints
-
-| Método | Rota | Autenticação |
-|---|---|---|
-| `GET` | `/api/health` | Pública |
-| `POST` | `/api/auth/login` | Pública |
-| `GET` | `/api/products` | Pública |
-| `POST` | `/api/products` | Administrador |
-| `GET` | `/api/history` | Pública |
-| `POST` | `/api/orders/whatsapp-link` | Pública |
-
-## 🛒 Fluxo de funcionamento
-
-A demonstração da aplicação contempla as seguintes operações:
-
-1. **Autenticação administrativa:** login do administrador utilizando o Supabase.
-2. **Gerenciamento de produtos:** cadastro de novos produtos e atualização imediata do catálogo, com persistência no MongoDB Atlas.
-3. **Histórico de navegação:** registro dos produtos visualizados pelo cliente utilizando Redis.
-4. **Carrinho e checkout:** seleção de produtos e geração de link para finalização do pedido via WhatsApp.
-
-## 👨‍💻 Autores
-- João Eduardo
+ 
+---
+ 
+## 📹 Vídeo de demonstração
+ 
+O vídeo (5-10 min) mostra:
+1. Login do administrador (Supabase)
+2. Cadastro de um novo produto e atualização imediata no catálogo do cliente (MongoDB)
+3. Simulação de uma compra com redirecionamento e mensagem formatada para o WhatsApp
+▶️ **[Assistir vídeo](https://SEU-LINK-DO-VIDEO)**
+ 
+---
+ 
+## 👥 Autores
+ 
+Projeto desenvolvido para a disciplina de Banco de Dados Avançado.
+- João Eduardo de Sousa Pessoa
 - Vladimir Gustavo
 
-Projeto acadêmico desenvolvido para a disciplina de **Banco de Dados Avançado — 2026**, minitrado pelo **Mestre Anderson Soares**.
+matéria de Projeto de Banco de Dados Avançado, ministrada pelo:
+- **Mestre Anderson Soares**
+---
+ 
+## 📄 Licença
+ 
+Projeto acadêmico, sem fins comerciais.
+ 
