@@ -13,10 +13,7 @@ const app = express();
 
 const PORT = process.env.PORT || 3000
 
-const allowedOrigins = [
-  ...env.CORS_ORIGINS.split(',').map(o => o.trim()),
-  process.env.FRONTEND_URL,
-].filter((origin): origin is string => Boolean(origin));
+const allowedOrigins = env.CORS_ORIGINS.split(',').map(o => o.trim());
 
 app.use(cors({
   origin(origin, callback) {
@@ -30,6 +27,15 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
+
+// Cors
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    process.env.FRONTEND_URL as string, 
+  ].filter(Boolean),
+  credentials: true,
+}))
 
 // ── Rotas ─────────────────────────────────────────────────────────────────────
 app.use('/api', router);
