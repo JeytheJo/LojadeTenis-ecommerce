@@ -22,7 +22,7 @@ E-commerce de tênis desenvolvido para a 3ª Avaliação da disciplina de **Banc
 |---|---|
 | 🌐 Deploy (Frontend) | [kicksco.vercel.app](https://lojade-tenis-ecommerce.vercel.app/) |
 | ⚙️ API (Backend) | [kicksco-backend.onrender.com](https://kicksco-backend.onrender.com) |
-| 🎥 Vídeo de demonstração | [Assista aqui](https://SEU-LINK-DO-VIDEO) |
+| 🎥 Vídeo de demonstração | [Assista aqui]([https://SEU-LINK-DO-VIDEO](https://drive.google.com/file/d/1GcTK4EOCZg7uv7rsXNQWwJ22j7x_GRib/view?usp=sharing)) |
  
 > ⚠️ O backend está hospedado no plano gratuito do Render — a primeira requisição após um período de inatividade pode levar alguns segundos para responder (cold start).
  
@@ -162,7 +162,7 @@ O vídeo (5-10 min) mostra:
 1. Login do administrador (Supabase)
 2. Cadastro de um novo produto e atualização imediata no catálogo do cliente (MongoDB)
 3. Simulação de uma compra com redirecionamento e mensagem formatada para o WhatsApp
-▶️ **[Assistir vídeo](https://SEU-LINK-DO-VIDEO)**
+▶️ **[Assistir vídeo]([https://SEU-LINK-DO-VIDEO](https://drive.google.com/file/d/1GcTK4EOCZg7uv7rsXNQWwJ22j7x_GRib/view?usp=sharing))**
  
 ---
  
